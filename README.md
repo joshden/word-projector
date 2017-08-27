@@ -1,2 +1,2 @@
 # word-projector
-Display song word on-screen for live events
+Display song words on-screen for live events
