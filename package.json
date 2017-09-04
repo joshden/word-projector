@@ -4,7 +4,9 @@
   "description": "Display song words on-screen for live events, like church services.",
   "main": "index.js",
   "dependencies": {
-    "purecss": "^1.0.0"
+    "jquery": "^3.2.1",
+    "purecss": "^1.0.0",
+    "screenfull": "^3.3.1"
   },
   "devDependencies": {},
   "scripts": {

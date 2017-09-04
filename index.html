@@ -4,51 +4,20 @@
     <meta charset="utf-8">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
 
-    <title>Come, Thou Fount of Every Blessing</title>
+    <title>Word Projector</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
-    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
-    <style type="text/css">
-        html {
-            font-size: 16px;
-        }
-        body {
-            background-color: #111;
-            color: #eee;
-            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-        }
-        div.presenter {
-            font-size: 30%;
-            width: 30%;
-        }
-        article {
-            font-size: 100%;
-            padding: 2.5em;
-        }
-        header {
-            font-size: 6.25em;
-            font-weight: bold;
-            text-align: center;
-        }
-        ol {
-            padding: 0;
-            margin-top: 9.375em;
-            margin-bottom: 9.375em;
-        }
-        li {
-            list-style-type: none;
-            font-size: 6.25em;
-            text-indent: -0.8em;
-            margin-left: 0.8em;
-            margin-top: 0.2em;
-            margin-bottom: 0.2em;
-            margin-right: 0em;
-        }
-    </style>
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="node_modules/screenfull/dist/screenfull.js"></script>
+    <script type="text/javascript" src="word-projector.js" async></script>
+    <link rel="stylesheet" href="node_modules/purecss/build/pure-min.css">
+    <link rel="stylesheet" href="node_modules/purecss/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="presentation.css">
 </head>
 
 <body>
-    <article>
+    <button id="launchPresentation">Launch Presentation</button>
+
+    <!-- <article>
         <header>Come, Thou Fount of Every Blessing</header>
 
         <ol>
@@ -85,8 +54,8 @@
         </ol>
 
         <footer>Come, Thou Fount of Every Blessing</footer>
-    </article>
-    
+    </article> -->
+
     <div class="presenter">
         <article>
             <header>Come, Thou Fount of Every Blessing</header>
