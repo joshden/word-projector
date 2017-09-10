@@ -6,8 +6,8 @@ body {
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 div#presenter {
-    font-size: 30%;
-    width: 30%;
+    /* This will be dynamically scaled based on ratio of presenter to presentation width */
+    width: 100%;
 }
 article {
     color: #eee;
