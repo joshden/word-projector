@@ -44,27 +44,27 @@ $(function() {
 
         //console.log(wordsHtml);
         $('#presenter').html(wordsHtml);
+        
+        function setActive($article) {
+            const $activeArticle = $('article.active')
+            if ($article.get(0) !== $activeArticle.get(0)) {
+                $activeArticle.removeClass('active');
+                $article.addClass('active');
+            }
+        }
 
-        function handleSongLineClick() {
-            const articleCssNthChild = $(this).parent().parent().prevAll('article').length + 1;
-            const olCssNthChild = $(this).parent().prevAll('ol').length + 1;
-            const liCssNthChild = $(this).prevAll('li').length + 1;
+        $('#presenter article header').add('#presenter article li').click(function() {
+            const $article = $(this).parents('article').first();
+            setActive($article);
 
-            const selector = 'article:nth-of-type('+articleCssNthChild+') > ol:nth-of-type('+olCssNthChild+') > li:nth-of-type('+liCssNthChild+')';
-
+            const articleCssNthChild = $article.prevAll('article').length + 1;
+            const selector = `article:nth-of-type(${articleCssNthChild})` + (
+                $(this).is('header') ? '' 
+                : `> ol:nth-of-type(${$(this).parent().prevAll('ol').length + 1}) > li:nth-of-type(${$(this).prevAll('li').length + 1})`);
+            
             popup.$('html, body').animate({
                 scrollTop: popup.$(selector).offset().top
             }, 1000);
-        }
-
-        let $selectedSong = $();
-        $('#presenter article').click(function() {
-            $selectedSong.removeClass('active');
-            $selectedSong.find('li').off('click');
-            
-            $selectedSong = $(this);
-            $selectedSong.addClass('active');
-            $selectedSong.find('li').click(handleSongLineClick);
         });
     });
 
