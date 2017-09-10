@@ -32,12 +32,11 @@ $(function() {
         const wordsHtml = `
             <article>
                 <header>${_.escape(song.title)}</header>            
-                ${(song.stanzas.map(stanza => stanza.lines).map(lines => `
-                <ol>
-                    <li>${(lines.map(line => _.escape(line)).join(`</li>
-                    <li>`))}</li>
+                ${song.stanzas.map(stanza => stanza.lines).map(lines => `
+                <ol>${lines.map(line => `
+                    <li>${_.escape(line)}</li>`).join('')}
                 </ol>`).join('\n')
-                )}
+                }
 
                 <footer>${_.escape(song.title)}</footer>
             </article>`;
