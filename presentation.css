@@ -12,6 +12,9 @@ div#presenter {
 div#presenter article:not(.active) {
     opacity: 0.4;
 }
+#presentation article:not(.active) {
+    opacity: 0;
+}
 article {
     color: #eee;
     font-size: 100%;

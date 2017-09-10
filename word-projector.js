@@ -45,20 +45,22 @@ $(function() {
         //console.log(wordsHtml);
         $('#presenter').html(wordsHtml);
         
-        function setActive($article) {
-            const $activeArticle = $('article.active')
-            if ($article.get(0) !== $activeArticle.get(0)) {
+        function setActive(articleSelector) {
+            const $activeArticle = $('article.active');
+            if ($(articleSelector).get(0) !== $activeArticle.get(0)) {
                 $activeArticle.removeClass('active');
-                $article.addClass('active');
+                popup.$('article.active').removeClass('active');
+                $(articleSelector).addClass('active');
+                popup.$(articleSelector).addClass('active');
             }
         }
 
         $('#presenter article header').add('#presenter article li').click(function() {
             const $article = $(this).parents('article').first();
-            setActive($article);
+            const articleSelector = `article:nth-of-type(${$article.prevAll('article').length + 1})`;
+            setActive(articleSelector);
 
-            const articleCssNthChild = $article.prevAll('article').length + 1;
-            const selector = `article:nth-of-type(${articleCssNthChild})` + (
+            const selector = articleSelector + (
                 $(this).is('header') ? '' 
                 : `> ol:nth-of-type(${$(this).parent().prevAll('ol').length + 1}) > li:nth-of-type(${$(this).prevAll('li').length + 1})`);
             
