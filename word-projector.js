@@ -28,8 +28,8 @@ $(function() {
         }
     });
 
-    $.get('song.json', song => {
-        const wordsHtml = `
+    $.get('songs.json', songs => {
+        const wordsHtml = songs.map(song => `
             <article>
                 <header>${_.escape(song.title)}</header>            
                 ${song.stanzas.map(stanza => stanza.lines).map(lines => `
@@ -39,15 +39,18 @@ $(function() {
                 }
 
                 <footer>${_.escape(song.title)}</footer>
-            </article>`;
+            </article>
+        `).join('');
 
+        //console.log(wordsHtml);
         $('#presenter').html(wordsHtml);
 
         $('#presenter li').click(function() {
+            const articleCssNthChild = $(this).parent().parent().prevAll('article').length + 1;
             const olCssNthChild = $(this).parent().prevAll('ol').length + 1;
             const liCssNthChild = $(this).prevAll('li').length + 1;
 
-            const selector = 'article > ol:nth-of-type('+olCssNthChild+') > li:nth-of-type('+liCssNthChild+')';
+            const selector = 'article:nth-of-type('+articleCssNthChild+') > ol:nth-of-type('+olCssNthChild+') > li:nth-of-type('+liCssNthChild+')';
 
             popup.$('html, body').animate({
                 scrollTop: popup.$(selector).offset().top

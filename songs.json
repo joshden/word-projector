@@ -1,0 +1,158 @@
+[
+    {
+        "title": "Come, Thou Fount of Every Blessing",
+        "majestyNumber": 999,
+        "majestyScripture": {
+            "reference": "",
+            "text": ""
+        },
+        "author": {
+            "name": "",
+            "birthYear": 1900,
+            "deathYear": 2000
+        },
+        "stanzas": [
+            {
+                "majestyVerse": 1,
+                "lines": [
+                    "Come, Thou Fount of every blessing,",
+                    "Tune my heart to sing Thy grace;",
+                    "Streams of mercy, never ceasing,",
+                    "Call for songs of loudest praise.",
+                    "Jesus sought me when a stranger,",
+                    "Wand’ring from the face of God;",
+                    "He, to save my soul from danger,",
+                    "Interposed His precious blood."   
+                ]
+            },
+            {
+                "majestyVerse": 2,
+                "lines": [
+                    "O to grace how great a debtor",
+                    "Daily I’m constrained to be!",
+                    "Let that grace, Lord, like a fetter,",
+                    "Bind my wand’ring heart to Thee.",
+                    "Teach me, Lord, some rapturous measure,",
+                    "Meet for me Thy grace to prove,",
+                    "While I sing the countless treasure",
+                    "Of my God’s unchanging love."
+                ]
+            },
+            {
+                "majestyVerse": 3,
+                "lines": [
+                    "Prone to wander, Lord, I feel it;",
+                    "Prone to leave the God I love:",
+                    "Take my heart, oh, take and seal it",
+                    "With Thy Spirit from above.",
+                    "Rescued thus from sin and danger,",
+                    "Purchased by the Savior’s blood,",
+                    "May I walk on earth a stranger,",
+                    "As a son and heir of God"
+                ]
+            }
+        ]
+    },
+    {
+        "title": "O Worship The King",
+        "majestyNumber": 65,
+        "majestyScripture": {
+            "reference": "Zechariah 14:16",
+            "text": "Worship the King, the LORD of hosts"
+        },
+        "author": {
+            "name": "Robert Grant",
+            "birthYear": 1779,
+            "deathYear": 1838
+        },
+        "stanzas": [
+            {
+                "majestyVerse": 1,
+                "lines": [
+                    "O worship the King, all glorious above,",
+                    "And gratefully sing His wonderful love;",
+                    "Our Shield and Defender, the Ancient of Days,",
+                    "Pavilioned in splendor and girded with praise."
+                ]
+            },
+            {
+                "majestyVerse": 2,
+                "lines": [
+                    "O tell of His might, O sing of His grace,",
+                    "Whose robe is the light, whose canopy space;",
+                    "His chariots of wrath the deep thunderclouds form,",
+                    "And dark is His path on the wings of the storm."
+                ]
+            },
+            {
+                "majestyVerse": 3,
+                "lines": [
+                    "Thy bountiful care what tongue can recite?",
+                    "It breathes in the air, it shines in the light,",
+                    "It streams from the hills, it descends to the plain,",
+                    "and sweetly distills in the dew and the rain."
+                ]
+            },
+            {
+                "majestyVerse": 4,
+                "lines": [
+                    "Frail children of dust, and feeble as frail,",
+                    "In Thee do we trust, nor find Thee to fail;",
+                    "Thy mercies, how tender, how firm to the end!",
+                    "Our Maker, Defender, Redeemer, and Friend."
+                ]
+            }
+        ]
+    },
+    {
+        "title": "Immortal, Invisible, God Only Wise",
+        "majestyNumber": 63,
+        "majestyScripture": {
+            "reference": "1 Timothy 1:17",
+            "text": "Now unto the King, eternal, immortal, invisible...be honor and glory forever"
+        },
+        "author": {
+            "name": "Walter Chalmers Smith",
+            "birthYear": 1824,
+            "deathYear": 1908
+        },
+        "stanzas": [
+            {
+                "majestyVerse": 1,
+                "lines": [
+                    "Immortal, invisible, God only wise,",
+                    "In light inaccessible hid from our eyes,",
+                    "Most blessed, most glorious, the Ancient of Days,",
+                    "Almighty, victorious, Thy great name we praise."
+                ]
+            },
+            {
+                "majestyVerse": 2,
+                "lines": [
+                    "Unresting, unhasting, and silent as light,",
+                    "Nor wanting, nor wasting, Thou rulest in might;",
+                    "Thy justice, like mountains, high soaring above",
+                    "Thy clouds, which are fountains of goodness and love."
+                ]
+            },
+            {
+                "majestyVerse": 3,
+                "lines": [
+                    "To all, life Thou givest, to both great and small,",
+                    "In all life Thou livest, the true life of all;",
+                    "We blossom and flourish as leaves on the tree,",
+                    "And wither and perish—but naught changeth Thee."
+                ]
+            },
+            {
+                "majestyVerse": 4,
+                "lines": [
+                    "Great Father of glory, pure Father of light,",
+                    "Thine angels adore Thee, all veiling their sight;",
+                    "All praise we would render; O help us to see",
+                    "’Tis only the splendor of light hideth Thee!"
+                ]
+            }
+        ]
+    }
+]
