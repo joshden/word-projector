@@ -45,7 +45,7 @@ $(function() {
         //console.log(wordsHtml);
         $('#presenter').html(wordsHtml);
 
-        $('#presenter li').click(function() {
+        function handleSongLineClick() {
             const articleCssNthChild = $(this).parent().parent().prevAll('article').length + 1;
             const olCssNthChild = $(this).parent().prevAll('ol').length + 1;
             const liCssNthChild = $(this).prevAll('li').length + 1;
@@ -55,7 +55,16 @@ $(function() {
             popup.$('html, body').animate({
                 scrollTop: popup.$(selector).offset().top
             }, 1000);
+        }
+
+        let $selectedSong = $();
+        $('#presenter article').click(function() {
+            $selectedSong.removeClass('active');
+            $selectedSong.find('li').off('click');
             
+            $selectedSong = $(this);
+            $selectedSong.addClass('active');
+            $selectedSong.find('li').click(handleSongLineClick);
         });
     });
 

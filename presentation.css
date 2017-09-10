@@ -9,6 +9,9 @@ div#presenter {
     /* This will be dynamically scaled based on ratio of presenter to presentation width */
     width: 100%;
 }
+div#presenter article:not(.active) {
+    opacity: 0.4;
+}
 article {
     color: #eee;
     font-size: 100%;
