@@ -1,7 +1,7 @@
 $(function() {
     let popup = null;
     let $currentSelection = null;
-    const $liveFrame = $('#liveFrame');
+    const $liveFrame = $('#liveFrame').hide();
 
     function borderWidth($obj, side) {
         return Number($obj.css(`border${side}Width`).slice(0, -2));
@@ -92,6 +92,7 @@ $(function() {
                 }, 1000);
             }
             
+            $liveFrame.show();
             resetLiveFramePosition();
         });
     });
