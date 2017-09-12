@@ -44,29 +44,35 @@ $(function() {
 
         //console.log(wordsHtml);
         $('#presenter').html(wordsHtml);
-        
-        function setActive(articleSelector) {
-            const $activeArticle = $('article.active');
-            if ($(articleSelector).get(0) !== $activeArticle.get(0)) {
-                $activeArticle.removeClass('active');
-                popup.$('article.active').removeClass('active');
-                $(articleSelector).addClass('active');
-                popup.$(articleSelector).addClass('active');
-            }
-        }
 
         $('#presenter article header').add('#presenter article li').click(function() {
             const $article = $(this).parents('article').first();
             const articleSelector = `article:nth-of-type(${$article.prevAll('article').length + 1})`;
-            setActive(articleSelector);
+            const $activeArticle = $('article.active');
 
-            const selector = articleSelector + (
+            const isSwitchingArticle = $(articleSelector).get(0) !== $activeArticle.get(0);
+            const scrollToSelector = articleSelector + (
                 $(this).is('header') ? '' 
                 : `> ol:nth-of-type(${$(this).parent().prevAll('ol').length + 1}) > li:nth-of-type(${$(this).prevAll('li').length + 1})`);
             
-            popup.$('html, body').animate({
-                scrollTop: popup.$(selector).offset().top
-            }, 1000);
+            const $popupHtmlBody = popup.$('html, body');
+            const popupScrollTop = popup.$(scrollToSelector).offset().top;
+
+            if (isSwitchingArticle) {
+                $activeArticle.removeClass('active');
+                popup.$('article.active').removeClass('active');
+
+                $popupHtmlBody.scrollTop(popupScrollTop);
+
+                $(articleSelector).addClass('active');
+                popup.$(articleSelector).addClass('active');
+            }
+
+            else {
+                $popupHtmlBody.animate({
+                    scrollTop: popupScrollTop
+                }, 1000);
+            }
         });
     });
 
