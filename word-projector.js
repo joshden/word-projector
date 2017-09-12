@@ -1,14 +1,30 @@
 $(function() {
     let popup = null;
+    let $currentSelection = null;
+    const $liveFrame = $('#liveFrame');
+
+    function borderWidth($obj, side) {
+        return Number($obj.css(`border${side}Width`).slice(0, -2));
+    }
+
+    function resetLiveFramePosition() {
+        if ($currentSelection) {
+            $liveFrame.css('top', $currentSelection.offset().top);
+        }
+    }
 
     function syncPresenterFontSize() {
         const popupWidth = popup.document.documentElement.clientWidth;
-        //const popupHeight = popup.document.documentElement.clientHeight;
         const presenterWidth = document.documentElement.clientWidth;
-        //const presenterHeight = document.documentElement.clientHeight;
+
         const presenterPercentage = String(presenterWidth / popupWidth * 100) + '%';
         $('#presenter').css('font-size', presenterPercentage);
-        //console.log(presenterPercentage);
+
+        const popupHeight = popup.document.documentElement.clientHeight;
+        const liveFrameHeight = presenterWidth / popupWidth * popupHeight;
+        $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
+        $liveFrame.css('width', String(presenterWidth - borderWidth($liveFrame, 'Left') - borderWidth($liveFrame, 'Left')) + 'px');
+        resetLiveFramePosition();
     }
 
     $('#launchPresentation').click(function() {
@@ -24,6 +40,7 @@ $(function() {
             };
             $(popup).resize(syncPresenterFontSize);
             $(window).resize(syncPresenterFontSize);
+            syncPresenterFontSize();
             $(this).text('Close Presentation');
         }
     });
@@ -46,14 +63,15 @@ $(function() {
         $('#presenter').html(wordsHtml);
 
         $('#presenter article header').add('#presenter article li').click(function() {
-            const $article = $(this).parents('article').first();
+            $currentSelection = $(this);
+            const $article = $currentSelection.parents('article').first();
             const articleSelector = `article:nth-of-type(${$article.prevAll('article').length + 1})`;
             const $activeArticle = $('article.active');
 
             const isSwitchingArticle = $(articleSelector).get(0) !== $activeArticle.get(0);
             const scrollToSelector = articleSelector + (
-                $(this).is('header') ? '' 
-                : `> ol:nth-of-type(${$(this).parent().prevAll('ol').length + 1}) > li:nth-of-type(${$(this).prevAll('li').length + 1})`);
+                $currentSelection.is('header') ? '' 
+                : `> ol:nth-of-type(${$currentSelection.parent().prevAll('ol').length + 1}) > li:nth-of-type(${$currentSelection.prevAll('li').length + 1})`);
             
             const $popupHtmlBody = popup.$('html, body');
             const popupScrollTop = popup.$(scrollToSelector).offset().top;
@@ -73,6 +91,8 @@ $(function() {
                     scrollTop: popupScrollTop
                 }, 1000);
             }
+            
+            resetLiveFramePosition();
         });
     });
 

@@ -5,6 +5,11 @@ body {
     background-color: #111;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
+#liveFrame {
+    position: absolute;
+    border: 12px solid red;
+    z-index: -1;
+}
 div#presenter {
     /* This will be dynamically scaled based on ratio of presenter to presentation width */
     font-size: 100%;
