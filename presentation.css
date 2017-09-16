@@ -11,12 +11,16 @@ body {
     z-index: -1;
     display: none;
 }
-div#presenter {
+#presenter {
     /* This will be dynamically scaled based on ratio of presenter to presentation width */
     font-size: 100%;
 }
-div#presenter article:not(.active) {
+#presenter article:not(.active) {
     opacity: 0.4;
+}
+#presenter.presentation-active article header:hover, #presenter.presentation-active article li:hover {
+    cursor: pointer;
+    text-decoration: underline dotted;
 }
 #presentation article {
     opacity: 0;

@@ -3,7 +3,8 @@ $(function() {
     let $currentSelection = null;
     const $launchPresentation = $('#launchPresentation');
     const $liveFrame = $('#liveFrame');
-    
+    const $presenter = $('#presenter');
+
     let popupWidth = 1920;
     let popupHeight = 1080;
     $(window).resize(syncPresenterFontSize);
@@ -37,7 +38,7 @@ $(function() {
         }
         const presenterWidth = document.documentElement.clientWidth;
         const presenterPercentage = String(presenterWidth / popupWidth * 100) + '%';
-        $('#presenter').css('font-size', presenterPercentage);
+        $presenter.css('font-size', presenterPercentage);
 
         const liveFrameHeight = presenterWidth / popupWidth * popupHeight;
         $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
@@ -53,7 +54,9 @@ $(function() {
             popup = window.open('presentation.html', '_blank', 'height=300,width=700,scrollbars=no');
             popup.onload = function() {
                 $('#presenter > article').clone().appendTo(popup.document.body);
+                $presenter.addClass('presentation-active');
                 popup.onunload = function() {
+                    $presenter.removeClass('presentation-active');
                     $launchPresentation.text('Launch Presentation');
                     $currentSelection = null;
                     $liveFrame.hide();
@@ -82,7 +85,7 @@ $(function() {
         `).join('');
 
         //console.log(wordsHtml);
-        $('#presenter').html(wordsHtml);
+        $presenter.html(wordsHtml);
 
         $('#presenter article header').add('#presenter article li').click(function() {
             if (popup) {
