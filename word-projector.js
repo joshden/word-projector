@@ -3,8 +3,11 @@ $(function() {
     let $currentSelection = null;
     const $launchPresentation = $('#launchPresentation');
     const $liveFrame = $('#liveFrame');
-    let popupWidth = 0;
-    let popupHeight = 0;
+    
+    let popupWidth = 1920;
+    let popupHeight = 1080;
+    $(window).resize(syncPresenterFontSize);
+    syncPresenterFontSize();
 
     function borderWidth($obj, side) {
         return Number($obj.css(`border${side}Width`).slice(0, -2));
@@ -59,7 +62,6 @@ $(function() {
                 };
             };
             $(popup).resize(syncPresenterFontSize);
-            $(window).resize(syncPresenterFontSize);
             syncPresenterFontSize();
             $launchPresentation.text('Close Presentation');
         }
