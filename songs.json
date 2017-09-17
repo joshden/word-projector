@@ -1,5 +1,6 @@
 [
     {
+        "id": 1,
         "title": "Come, Thou Fount of Every Blessing",
         "majestyNumber": 999,
         "majestyScripture": {
@@ -54,6 +55,7 @@
         ]
     },
     {
+        "id": 2,
         "title": "O Worship The King",
         "majestyNumber": 65,
         "majestyScripture": {
@@ -105,6 +107,7 @@
         ]
     },
     {
+        "id": 3,
         "title": "Immortal, Invisible, God Only Wise",
         "majestyNumber": 63,
         "majestyScripture": {
