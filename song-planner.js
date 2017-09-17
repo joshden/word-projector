@@ -1,5 +1,6 @@
 $.get('songs.json', allSongs => {
     $('#songs').selectize({
+        plugins: ['remove_button', 'drag_drop', 'restore_on_backspace'],
         maxItems: null,
         valueField: 'id',
         labelField: 'title',
