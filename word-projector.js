@@ -14,9 +14,13 @@ $(function() {
         return Number($obj.css(`border${side}Width`).slice(0, -2));
     }
 
-    function resetLiveFramePosition() {
+    function setLiveFramePosition() {
         if ($currentSelection) {
+            $liveFrame.show();
             $liveFrame.css('top', $currentSelection.offset().top);
+        }
+        else {
+            $liveFrame.hide();
         }
     }
 
@@ -28,6 +32,15 @@ $(function() {
         getActiveArticle().removeClass('active');
         if (popup) {
             popup.$('article.active').removeClass('active');
+        }
+    }
+
+    function loadPresentationFromPresenter() {
+        $currentSelection = null;
+        setLiveFramePosition();
+        if (popup) {
+            popup.$('article').remove();
+            $('#presenter > article').clone().appendTo(popup.document.body);
         }
     }
 
@@ -43,7 +56,7 @@ $(function() {
         const liveFrameHeight = presenterWidth / popupWidth * popupHeight;
         $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
         $liveFrame.css('width', String(presenterWidth - borderWidth($liveFrame, 'Left') - borderWidth($liveFrame, 'Left')) + 'px');
-        resetLiveFramePosition();
+        setLiveFramePosition();
     }
 
     $launchPresentation.click(function() {
@@ -53,15 +66,15 @@ $(function() {
         else {
             popup = window.open('presentation.html', '_blank', 'height=300,width=700,scrollbars=no');
             popup.onload = function() {
-                $('#presenter > article').clone().appendTo(popup.document.body);
+                loadPresentationFromPresenter();
                 $presenter.addClass('presentation-active');
                 popup.onunload = function() {
+                    popup = null;
                     $presenter.removeClass('presentation-active');
                     $launchPresentation.text('Launch Presentation');
                     $currentSelection = null;
-                    $liveFrame.hide();
+                    setLiveFramePosition();
                     unselectSong();
-                    popup = null;
                 };
             };
             $(popup).resize(syncPresenterFontSize);
@@ -70,7 +83,7 @@ $(function() {
         }
     });
 
-    $.get('songs.json', songs => {
+    $presenter.on('songs:change', (e, songs) => {
         const wordsHtml = songs.map(song => `
             <article>
                 <header>${_.escape(song.title)}</header>            
@@ -86,6 +99,7 @@ $(function() {
 
         //console.log(wordsHtml);
         $presenter.html(wordsHtml);
+        loadPresentationFromPresenter();
 
         $('#presenter article header').add('#presenter article li').click(function() {
             if (popup) {
@@ -115,8 +129,7 @@ $(function() {
                     }, 1000);
                 }
                 
-                $liveFrame.show();
-                resetLiveFramePosition();
+                setLiveFramePosition();
             }
         });
     });

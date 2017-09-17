@@ -1,9 +1,16 @@
-$.get('songs.json', songs => {
+$.get('songs.json', allSongs => {
     $('#songs').selectize({
-        // maxItems: null,
+        maxItems: null,
         valueField: 'id',
         labelField: 'title',
         searchField: 'title',
-        options: songs
+        options: allSongs,
+        onChange: function(ids) {
+            const selectedSongs = ids
+                .map(id => parseInt(id, 10))
+                .map(id => allSongs.find(song => song.id === id));
+
+            $('#presenter').trigger('songs:change', [selectedSongs]);
+        }
     });
 });
