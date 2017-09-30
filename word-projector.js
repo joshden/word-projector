@@ -77,9 +77,9 @@ $(function() {
                     setLiveFramePosition();
                     unselectSong();
                 };
+                syncPresenterFontSize();
             };
             $(popup).resize(syncPresenterFontSize);
-            syncPresenterFontSize();
             $launchPresentation.text('Close Presentation');
         }
     });
