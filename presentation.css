@@ -24,7 +24,6 @@ body {
 }
 #presentation article {
     opacity: 0;
-    transition: opacity 1s ease;
 }
 #presentation article.active {
     opacity: 1;
