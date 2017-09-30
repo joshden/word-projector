@@ -41,6 +41,7 @@ $(function() {
         if (popup) {
             popup.$('article').remove();
             $('#presenter > article').clone().appendTo(popup.document.body);
+            popup.document.title = '';
         }
     }
 
@@ -121,6 +122,7 @@ $(function() {
 
                     $(articleSelector).addClass('active');
                     popup.$(articleSelector).addClass('active');
+                    popup.document.title = $article.find('header').text();
                 }
 
                 else {
