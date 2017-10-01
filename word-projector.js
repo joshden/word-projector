@@ -53,6 +53,8 @@ $(function() {
         const liveFrameHeight = presenterWidth / popupWidth * popupHeight;
         $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
         $liveFrame.css('width', String(presenterWidth - borderWidth($liveFrame, 'Left') - borderWidth($liveFrame, 'Left')) + 'px');
+        
+        //console.log('presenterWidth', presenterWidth);
         setLiveFramePosition();
     }
 
@@ -116,6 +118,7 @@ $(function() {
 
                 if (isSwitchingArticle) {
                     unselectSong();
+                    $presentationHtml.stop(true);
                     $presentationHtml.scrollTop(popupScrollTop);
                     $presenterAndPresentation.find(articleSelector).addClass('active');
                     $presentationHtml.find('title').text($article.find('header').text());
