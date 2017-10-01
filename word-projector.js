@@ -4,6 +4,11 @@ $(function() {
     const $launchPresentation = $('#launchPresentation');
     const $liveFrame = $('#liveFrame');
     const $presenter = $('#presenter');
+    const activeClass = 'active';
+    const activeArticle = 'article.' + activeClass;
+    let $presentationHtml = $();
+    let $presentation = $();
+    let $presenterAndPresentation = $();
 
     let popupWidth = 1920;
     let popupHeight = 1080;
@@ -24,25 +29,16 @@ $(function() {
         }
     }
 
-    function getActiveArticle() {
-        return $('article.active');
-    }
-
     function unselectSong() {
-        getActiveArticle().removeClass('active');
-        if (popup) {
-            popup.$('article.active').removeClass('active');
-        }
+        $presenterAndPresentation.find(activeArticle).removeClass(activeClass);
     }
 
     function loadPresentationFromPresenter() {
         $currentSelection = null;
         setLiveFramePosition();
-        if (popup) {
-            popup.$('article').remove();
-            $('#presenter > article').clone().appendTo(popup.document.body);
-            popup.document.title = '';
-        }
+        $presentation.find('article').remove();
+        $presenter.find('article').clone().appendTo($presentation);
+        $presentationHtml.find('title').text('');
     }
 
     function syncPresenterFontSize() {
@@ -67,6 +63,9 @@ $(function() {
         else {
             popup = window.open('presentation.html', '_blank', 'height=300,width=700,scrollbars=no');
             popup.onload = function() {
+                $presentationHtml = $(popup.document).find('html');
+                $presentation = $presentationHtml.find('body#presentation');
+                $presenterAndPresentation = $presenter.add($presentation);
                 loadPresentationFromPresenter();
                 $presenter.addClass('presentation-active');
                 popup.onunload = function() {
@@ -102,31 +101,28 @@ $(function() {
         $presenter.html(wordsHtml);
         loadPresentationFromPresenter();
 
-        $('#presenter article header').add('#presenter article li').click(function() {
+        $presenter.find('article header, article li').click(function() {
             if (popup) {
                 $currentSelection = $(this);
                 const $article = $currentSelection.parents('article').first();
                 const articleSelector = `article:nth-of-type(${$article.prevAll('article').length + 1})`;
 
-                const isSwitchingArticle = $(articleSelector).get(0) !== getActiveArticle().get(0);
+                const isSwitchingArticle = $(articleSelector).get(0) !== $(activeArticle).get(0);
                 const scrollToSelector = articleSelector + (
                     $currentSelection.is('header') ? '' 
                     : `> ol:nth-of-type(${$currentSelection.parent().prevAll('ol').length + 1}) > li:nth-of-type(${$currentSelection.prevAll('li').length + 1})`);
                 
-                const $popupHtmlBody = popup.$('html, body');
-                const popupScrollTop = popup.$(scrollToSelector).offset().top;
+                const popupScrollTop = $presentation.find(scrollToSelector).offset().top;
 
                 if (isSwitchingArticle) {
                     unselectSong();
-                    $popupHtmlBody.scrollTop(popupScrollTop);
-
-                    $(articleSelector).addClass('active');
-                    popup.$(articleSelector).addClass('active');
-                    popup.document.title = $article.find('header').text();
+                    $presentationHtml.scrollTop(popupScrollTop);
+                    $presenterAndPresentation.find(articleSelector).addClass('active');
+                    $presentationHtml.find('title').text($article.find('header').text());
                 }
 
                 else {
-                    $popupHtmlBody.animate({
+                    $presentationHtml.animate({
                         scrollTop: popupScrollTop
                     }, 1000);
                 }
