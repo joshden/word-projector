@@ -19,8 +19,6 @@ fs.readFile("data/#1-25.docx", function(err, data) {
 // });
 
 function processXml(data) {
-    fs.readFile('data/#1-25/word/document.xml', 'utf8', function(err, data) {
-        if (err) throw err;
         parseString(data, {/*ignoreAttrs: true,*/ preserveChildrenOrder: true, explicitChildren: true}, function (err, result) {
             if (err) throw err;
             const output = [];
@@ -104,5 +102,4 @@ function processXml(data) {
             console.log(JSON.stringify(lines, null, 2));
             // console.log(spacings);
         });
-    });
 }
