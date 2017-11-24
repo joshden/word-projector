@@ -86,7 +86,12 @@ function processXml(data, resolve, reject) {
                             }
                             else if (el['#name'] === 'w:t') {
                                 if (el.hasOwnProperty('_')) {
+                                    // console.log(`[${el._}]`);
                                     outputLine.push(el._);
+                                }
+                                else if (el.$ && el.$['xml:space'] === 'preserve') {
+                                    // console.log(el);
+                                    outputLine.push(' ');
                                 }
                             }
                             else {
