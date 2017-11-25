@@ -92,12 +92,12 @@ getDocxTextLines('data/#1-25.docx').then(lines => {
         else if (currentSongLocation === songLocations.afterTune || currentSongLocation === songLocations.inStanzas) {
             const match = line.trim().match(/^(\d+)\. (.+)$/);
             if (match) {
-                const number = Number(match[1]);
+                const verseNumber = Number(match[1]);
                 const restOfLine = match[2];
-                if (currentStanza && currentStanza.majestyNumber + 1 !== number) {
-                    throw `Expected line ${i} to be stanza #${currentStanza.majestyNumber + 1}, but found: ${line}`;
+                if (currentStanza && currentStanza.majestyVerse + 1 !== verseNumber) {
+                    throw `Expected line ${i} to be stanza #${currentStanza.majestyVerse + 1}, but found: ${line}`;
                 }
-                currentStanza = { majestyNumber: number, lines: [restOfLine] };
+                currentStanza = { majestyVerse: verseNumber, lines: [restOfLine] };
                 if (! currentSong.stanzas) {
                     currentSong.stanzas = [];
                     currentSongLocation = songLocations.inStanzas;
