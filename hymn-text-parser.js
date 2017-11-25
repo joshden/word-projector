@@ -13,6 +13,7 @@ getDocxTextLines('data/#1-25.docx').then(lines => {
     };
 
     const songs = [];
+    let id = 0;
     let currentSong = null;
     let currentStanza = null;
     let currentSongLocation = songLocations.before;
@@ -26,7 +27,7 @@ getDocxTextLines('data/#1-25.docx').then(lines => {
         const startOfSongMatch = line.match(/^#(\d+) (.+)$/);
         if (currentSongLocation === songLocations.before || (startOfSongMatch && currentSongLocation >= songLocations.inStanzas)) {
             if (startOfSongMatch) {
-                currentSong = {title: startOfSongMatch[2], majestyNumber: Number(startOfSongMatch[1])};
+                currentSong = { id: ++id, title: startOfSongMatch[2], majestyNumber: Number(startOfSongMatch[1]) };
                 currentStanza = null;
                 currentSongLocation = songLocations.afterTitle;
                 songs.push(currentSong);
