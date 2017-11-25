@@ -1,4 +1,4 @@
-$.get('songs.json', allSongs => {
+$.get('data/songs.json', allSongs => {
     $('#songs').selectize({
         plugins: ['remove_button', 'drag_drop', 'restore_on_backspace'],
         maxItems: null,

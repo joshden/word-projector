@@ -1,0 +1,111 @@
+[
+  {
+    "id": 1,
+    "title": "Rejoice, the Lord Is King",
+    "majestyNumber": 1,
+    "majestyScripture": {
+      "reference": "Psalm 10:16",
+      "text": "The Lord is King for ever and ever."
+    },
+    "author": {
+      "name": "Charles Wesley",
+      "birthYear": 1707,
+      "deathYear": 1788
+    },
+    "tune": "Darwall",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "Rejoice, the Lord is King! Your Lord and King adore;",
+          "Rejoice, give thanks, and sing, and triumph evermore;",
+          "Lift up your heart, lift up your voice!",
+          "Rejoice, again I say, rejoice!"
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Jesus, the Savior, reigns, the God of truth and love;",
+          "When He had purged our stains, He took His seat above;",
+          "Lift up your heart, lift up your voice!",
+          "Rejoice, again I say, rejoice!"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "His kingdom cannot fail, He rules o’er earth and Heav’n,",
+          "The keys of death and hell are to our Jesus giv’n;",
+          "Lift up your heart, lift up your voice!",
+          "Rejoice, again I say, rejoice!"
+        ]
+      },
+      {
+        "majestyVerse": 4,
+        "lines": [
+          "Rejoice in glorious hope! Our Lord, the Judge, shall come,",
+          "And take His servants up to their eternal home.",
+          "Lift up your heart, lift up your voice!",
+          "Rejoice, again I say, rejoice!"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Come, Christians, Join to Sing",
+    "majestyNumber": 2,
+    "majestyScripture": {
+      "reference": "Psalm 95:1",
+      "text": "O come, let us sing unto the Lord."
+    },
+    "author": {
+      "name": "Christian H. Bateman",
+      "birthYear": 1813,
+      "deathYear": 1889
+    },
+    "tune": "Madrid",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "Come, Christians, join to sing",
+          "Alleluia! Amen!",
+          "Loud praise to Christ our King",
+          "Alleluia! Amen!",
+          "Let all with heart and voice,",
+          "Before His throne rejoice;",
+          "Praise is His gracious choice:",
+          "Alleluia! Amen!"
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Come, lift your hearts on high",
+          "Alleluia! Amen!",
+          "Let praises fill the sky",
+          "Alleluia! Amen!",
+          "He is our Guide and Friend,",
+          "To us He’ll condescend;",
+          "His love shall never end:",
+          "Alleluia! Amen!"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "Praise yet our Christ again",
+          "Alleluia! Amen!",
+          "Life shall not end the strain",
+          "Alleluia! Amen!",
+          "On heaven’s blissful shore",
+          "His goodness we’ll adore,",
+          "Singing forevermore,",
+          "“Alleluia! Amen!”"
+        ]
+      }
+    ]
+  }
+]
