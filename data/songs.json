@@ -1,0 +1,751 @@
+[
+  {
+    "id": 1,
+    "title": "Rejoice, the Lord Is King",
+    "majestyNumber": 1,
+    "majestyScripture": {
+      "reference": "Psalm 10:16",
+      "text": "The Lord is King for ever and ever."
+    },
+    "author": {
+      "name": "Charles Wesley",
+      "birthYear": 1707,
+      "deathYear": 1788
+    },
+    "tune": "Darwall",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "Rejoice, the Lord is King! Your Lord and King adore;",
+          "Rejoice, give thanks, and sing, and triumph evermore;",
+          "Lift up your heart, lift up your voice!",
+          "Rejoice, again I say, rejoice!"
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Jesus, the Savior, reigns, the God of truth and love;",
+          "When He had purged our stains, He took His seat above;",
+          "Lift up your heart, lift up your voice!",
+          "Rejoice, again I say, rejoice!"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "His kingdom cannot fail, He rules o’er earth and Heav’n,",
+          "The keys of death and hell are to our Jesus giv’n;",
+          "Lift up your heart, lift up your voice!",
+          "Rejoice, again I say, rejoice!"
+        ]
+      },
+      {
+        "majestyVerse": 4,
+        "lines": [
+          "Rejoice in glorious hope! Our Lord, the Judge, shall come,",
+          "And take His servants up to their eternal home.",
+          "Lift up your heart, lift up your voice!",
+          "Rejoice, again I say, rejoice!"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Come, Christians, Join to Sing",
+    "majestyNumber": 2,
+    "majestyScripture": {
+      "reference": "Psalm 95:1",
+      "text": "O come, let us sing unto the Lord."
+    },
+    "author": {
+      "name": "Christian H. Bateman",
+      "birthYear": 1813,
+      "deathYear": 1889
+    },
+    "tune": "Madrid",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "Come, Christians, join to sing",
+          "Alleluia! Amen!",
+          "Loud praise to Christ our King",
+          "Alleluia! Amen!",
+          "Let all with heart and voice,",
+          "Before His throne rejoice;",
+          "Praise is His gracious choice:",
+          "Alleluia! Amen!"
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Come, lift your hearts on high",
+          "Alleluia! Amen!",
+          "Let praises fill the sky",
+          "Alleluia! Amen!",
+          "He is our Guide and Friend,",
+          "To us He’ll condescend;",
+          "His love shall never end:",
+          "Alleluia! Amen!"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "Praise yet our Christ again",
+          "Alleluia! Amen!",
+          "Life shall not end the strain",
+          "Alleluia! Amen!",
+          "On heaven’s blissful shore",
+          "His goodness we’ll adore,",
+          "Singing forevermore,",
+          "“Alleluia! Amen!”"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "title": "O for a Thousand Tongues",
+    "majestyNumber": 5,
+    "majestyScripture": {
+      "reference": "Psalm 35:28",
+      "text": "My tongue shall speak…of Thy praise all the day long."
+    },
+    "author": {
+      "name": "Charles Wesley",
+      "birthYear": 1707,
+      "deathYear": 1788
+    },
+    "tune": "Azmon",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "O for a thousand tongues to sing",
+          "My great Redeemer’s praise,",
+          "The glories of my God and King,",
+          "The triumphs of His grace."
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "My gracious Master and my God,",
+          "Assist me to proclaim,",
+          "To spread through all the earth abroad,",
+          "The honors of Thy name."
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "Jesus! the name that charms our fears,",
+          "That bids our sorrows cease;",
+          "’Tis music in the sinner’s ears,",
+          "’Tis life, and health, and peace."
+        ]
+      },
+      {
+        "majestyVerse": 4,
+        "lines": [
+          "Hear Him, ye deaf; His praise, ye dumb,",
+          "Your loosened tongues employ;",
+          "Ye blind, behold your Savior come;",
+          "And leap, ye lame, for joy."
+        ]
+      },
+      {
+        "majestyVerse": 5,
+        "lines": [
+          "He breaks the pow’r of canceled sin,",
+          "He sets the prisoner free;",
+          "His blood can make the foulest clean;",
+          "His blood availed for me."
+        ]
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "I Sing the Mighty Power of God",
+    "majestyNumber": 6,
+    "majestyScripture": {
+      "reference": "Psalm 106:8",
+      "text": "He saved them…that He might make His mighty power to be known."
+    },
+    "author": {
+      "name": "Isaac Watts",
+      "birthYear": 1674,
+      "deathYear": 1748
+    },
+    "tune": "Ellacombe",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "I sing the mighty power of God,",
+          "that made the mountains rise;",
+          "That spread the flowing seas abroad,",
+          "and built the lofty skies.",
+          "I sing the wisdom that ordained",
+          "The sun to rule the day;",
+          "The moon shines full at His command,",
+          "And all the stars obey."
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "I sing the goodness of the Lord,",
+          "That filled the earth with food;",
+          "He formed the creatures with His Word,",
+          "and then pronounced them good.",
+          "Lord, how Thy wonders are displayed,",
+          "where’er I turn my eye:",
+          "If I survey the ground I tread,",
+          "Or gaze upon the sky!"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "There’s not a plant or flower below,",
+          "but makes Thy glories known,",
+          "And clouds arise, and tempests blow,",
+          "by order from Thy throne;",
+          "While all that borrows life from Thee",
+          "is ever in Thy care;",
+          "And everywhere that we can be,",
+          "Thou, God art present there."
+        ]
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Come, Thou Fount of Every Blessing",
+    "majestyNumber": 7,
+    "majestyScripture": {
+      "reference": "Psalm 36:9",
+      "text": "With Thee is the fountain of life."
+    },
+    "author": {
+      "name": "Robert Robinson",
+      "birthYear": 1735,
+      "deathYear": 1790
+    },
+    "tune": "Nettleton",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "Come, Thou Fount of ev‘ry blessing,",
+          "Tune my heart to sing Thy grace;",
+          "Streams of mercy, never ceasing,",
+          "Call for songs of loudest praise.",
+          "Teach me some melodious sonnet,",
+          "Sung by flaming tongues above;",
+          "Praise the mount, I’m fixed upon it,",
+          "Mount of Thy redeeming love."
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Here I raise mine Ebenezer",
+          "Hither by Thy help I’m come;",
+          "And I hope, by Thy good pleasure,",
+          "Safely to arrive at home.",
+          "Jesus sought me when a stranger,",
+          "Wand’ring from the fold of God;",
+          "He to rescue me from danger,",
+          "Interposed His precious blood."
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "O to grace how great a debtor",
+          "Daily I’m constrained to be!",
+          "Let Thy goodness, like a fetter,",
+          "Bind my wand’ring heart to Thee:",
+          "Prone to wander, Lord, I feel it,",
+          "Prone to leave the God I love;",
+          "Here’s my heart, O take and seal it,",
+          "Seal it for Thy courts above."
+        ]
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "title": "I Will Praise Him",
+    "majestyNumber": 10,
+    "majestyScripture": {
+      "reference": "Revelations 1:5",
+      "text": "Unto Him that…washed us from our sins in His own blood."
+    },
+    "author": {
+      "name": "Margaret J. Harris",
+      "birthYear": 1903,
+      "deathYear": null
+    },
+    "tune": "I Will Praise Him",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "When I saw the cleansing fountain,",
+          "Open wide for all my sin,",
+          "I obeyed the Spirit’s wooing",
+          "When He said, “Wilt thou be clean?”",
+          "",
+          "I will praise Him! I will praise Him!",
+          "Praise the Lamb for sinners slain;",
+          "Give Him glory, all ye people,",
+          "For His blood can wash away each stain."
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Tho' the way seems straight and narrow,",
+          "All I claimed was swept away;",
+          "My ambitions, plans and wishes,",
+          "At my feet in ashes lay.",
+          "",
+          "I will praise Him! I will praise Him!",
+          "Praise the Lamb for sinners slain;",
+          "Give Him glory, all ye people,",
+          "For His blood can wash away each stain"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "Blessed be the name of Jesus!",
+          "I’m so glad He took me in;",
+          "He’s forgiven my transgressions,",
+          "He has cleansed my heart from sin.",
+          "",
+          "I will praise Him! I will praise Him!",
+          "Praise the Lamb for sinners slain;",
+          "Give Him glory, all ye people,",
+          "For His blood can wash a-way each stain"
+        ]
+      },
+      {
+        "majestyVerse": 4,
+        "lines": [
+          "Glory, glory to the Father!",
+          "Glory, glory to the Son!",
+          "Glory, glory to the Spirit!",
+          "Glory to the Three in One!",
+          "",
+          "I will praise Him! I will praise Him!",
+          "Praise the Lamb for sinners slain;",
+          "Give Him glory, all ye people,",
+          "For His blood can wash a-way each stain"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Come, Thou Fount of Every Blessing",
+    "majestyNumber": 11,
+    "majestyScripture": {
+      "reference": "Psalm 36:9",
+      "text": "With Thee is the fountain of life."
+    },
+    "author": {
+      "name": "Robert Robinson",
+      "birthYear": 1735,
+      "deathYear": 1790
+    },
+    "tune": "Warrenton",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "Come, Thou Fount of ev‘ry blessing,",
+          "Tune my heart to sing Thy grace;",
+          "Streams of mercy, never ceasing,",
+          "Call for songs of loudest praise.",
+          "",
+          "I am bound for the kingdom,",
+          "Will you go to glory with me?",
+          "Hallelujah, praise the Lord!"
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Here I raise mine Ebenezer",
+          "Hither by Thy help I’m come;",
+          "And I hope, by Thy good pleasure,",
+          "Safely to arrive at home.",
+          "",
+          "I am bound for the kingdom,",
+          "Will you go to glory with me?",
+          "Hallelujah, praise the Lord!"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "O to grace how great a debtor",
+          "Daily I’m constrained to be!",
+          "Let Thy goodness, like a fetter,",
+          "Bind my wand’ring heart to Thee:",
+          "",
+          "I am bound for the kingdom,",
+          "Will you go to glory with me?",
+          "Hallelujah, praise the Lord!"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "title": "All Hail the Power of Jesus’ Name",
+    "majestyNumber": 12,
+    "majestyScripture": {
+      "reference": "Philippians 2:9 & 11",
+      "text": "God has given a name which is above every name…Jesus Christ [the] Lord."
+    },
+    "author": {
+      "name": "Edward Perronet",
+      "birthYear": 1726,
+      "deathYear": 1792
+    },
+    "adaptedBy": {
+      "name": "John Rippon",
+      "birthYear": 1751,
+      "deathYear": 1836
+    },
+    "tune": "Coronation",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "All hail the pow’r of Jesus’ Name!",
+          "Let angels prostrate fall;",
+          "Bring forth the royal diadem,",
+          "and crown Him Lord of all;",
+          "Bring forth the royal diadem,",
+          "and crown Him Lord of all!"
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Ye chosen seed of Israel’s race,",
+          "Ye ransomed from the fall,",
+          "Hail Him who saves you by His grace,",
+          "and crown Him Lord of all;",
+          "Hail Him Who saves you by His grace,",
+          "and crown Him Lord of all!"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "Let ev’ry kindred, ev’ry tribe,",
+          "On this terrestrial ball,",
+          "To Him all majesty ascribe,",
+          "And Crown Him Lord of all;",
+          "To Him all majesty ascribe,",
+          "And crown Him Lord of all!"
+        ]
+      },
+      {
+        "majestyVerse": 4,
+        "lines": [
+          "O that with yonder sacred throng,",
+          "We at His feet may fall!",
+          "We’ll join the everlasting song,",
+          "And crown Him Lord of all;",
+          "We’ll join the everlasting song,",
+          "And crown Him Lord of all!"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "title": "O for a Thousand Tongues",
+    "majestyNumber": 15,
+    "majestyScripture": {
+      "reference": "Psalm 35:28",
+      "text": "My tongue shall speak of Thy righteousness and of Thy praise all the day long."
+    },
+    "author": {
+      "name": "Charles Wesley",
+      "birthYear": 1707,
+      "deathYear": 1788
+    },
+    "tune": "Lyngham",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "O for a thousand tongues to sing",
+          "My great Redeemer’s praise,",
+          "My great Redeemer’s praise,",
+          "The glories of my God and King,",
+          "The triumphs of His grace,",
+          "The triumphs of His grace,",
+          "The triumphs of His grace,"
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "My gracious Master and my God,",
+          "Assist me to proclaim,",
+          "Assist me to proclaim,",
+          "To spread through all the earth abroad,",
+          "The honors of Thy name,",
+          "The honors of Thy name,",
+          "The honors of Thy name."
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "Jesus! the name that charms our fears,",
+          "That bids our sorrows cease,",
+          "That bids our sorrows cease;",
+          "’Tis music in the sinner’s ears,",
+          "’Tis life, and health, and peace.",
+          "‘Tis life, and health, and peace.",
+          "‘Tis life, and health and peace."
+        ]
+      },
+      {
+        "majestyVerse": 4,
+        "lines": [
+          "He breaks the pow’r of canceled sin,",
+          "He sets the prisoner free,",
+          "He sets the prisoner free.",
+          "His blood can make the foulest clean,",
+          "His blood availed for me;",
+          "His blood availed for me,",
+          "His blood availed for me."
+        ]
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "title": "O How I Love Jesus",
+    "majestyNumber": 18,
+    "majestyScripture": {
+      "reference": "1 John 4:19",
+      "text": "We love Him, because He first loved us."
+    },
+    "author": {
+      "name": "Frederick Whitfield",
+      "birthYear": 1829,
+      "deathYear": 1904
+    },
+    "tune": "O How I Love Jesus",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "There is a name I love to hear,",
+          "I love to sing its worth;",
+          "It sounds like music in mine ear,",
+          "The sweetest name on earth.",
+          "",
+          "O how I love Jesus,",
+          "O how I love Jesus,",
+          "O how I love Jesus,",
+          "Because He first loved me!"
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "It tells me of a Savior’s love,",
+          "Who died to set me free;",
+          "It tells me of His precious blood,",
+          "The sinner’s perfect plea.",
+          "",
+          "O how I love Jesus,",
+          "O how I love Jesus,",
+          "O how I love Jesus,",
+          "Because He first loved me!"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "It tells of One whose loving heart",
+          "Can feel my deepest woe,",
+          "Who in each sorrow bears a part",
+          "That none can bear below.",
+          "",
+          "O how I love Jesus,",
+          "O how I love Jesus,",
+          "O how I love Jesus,",
+          "Because He first loved me!"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "title": "Praise Him! Praise Him!",
+    "majestyNumber": 20,
+    "majestyScripture": {
+      "reference": "Isaiah 60:16",
+      "text": "I the Lord am thy Savior and thy Redeemer."
+    },
+    "author": {
+      "name": "Fanny Crosby",
+      "birthYear": 1820,
+      "deathYear": 1915
+    },
+    "tune": "Joyful Song",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "Praise Him! Praise Him! Jesus, our blessed Redeemer!",
+          "Sing, O earth, His wonderful love proclaim!",
+          "Hail Him! hail Him! highest archangels in glory;",
+          "Strength and honor give to His holy name!",
+          "Like a shepherd, Jesus will guard His children,",
+          "In His arms He carries them all day long:",
+          "",
+          "Praise Him! Praise Him!",
+          "Tell of His excellent greatness;",
+          "Praise Him! Praise Him!",
+          "Ever in joyful song!"
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Praise Him! Praise Him! Jesus, our blessed Redeemer!",
+          "For our sins He suffered, and bled, and died;",
+          "He our Rock, our hope of eternal salvation,",
+          "Hail Him! hail Him! Jesus the Crucified.",
+          "Sound His praises! Jesus who bore our sorrows,",
+          "Love unbounded, wonderful, deep and strong:",
+          "",
+          "Praise Him! Praise Him!",
+          "Tell of His excellent greatness;",
+          "Praise Him! Praise Him!",
+          "Ever in joyful song!"
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "Praise Him! Praise Him! Jesus, our blessed Redeemer!",
+          "Heav’nly portals loud with hosannas ring!",
+          "Jesus, Savior, reigneth forever and ever;",
+          "Crown Him! Crown Him! Prophet, and Priest, and King!",
+          "Christ is coming! over the world victorious,",
+          "Pow’r and glory unto the Lord belong:",
+          "",
+          "Praise Him! Praise Him!",
+          "Tell of His excellent greatness;",
+          "Praise Him! Praise Him!",
+          "Ever in joyful song!"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "title": "Praise God, from Whom All Blessings Flow",
+    "majestyNumber": 21,
+    "majestyScripture": {
+      "reference": "Proverbs 28:20",
+      "text": "A faithful man shall abound with blessings."
+    },
+    "author": {
+      "name": "Thomas Ken",
+      "birthYear": 1637,
+      "deathYear": 1711
+    },
+    "tune": "Old 100th",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "Praise God, from whom all blessings flow;",
+          "Praise Him, all creatures here below;",
+          "Praise Him above, ye heav’nly host;",
+          "Praise Father, Son, and Holy Ghost! Amen."
+        ]
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "title": "Praise the Lord Who Reigns Above",
+    "majestyNumber": 25,
+    "majestyScripture": {
+      "reference": "I Chronicles 16:31",
+      "text": "Let men say among the nations, The Lord reigneth."
+    },
+    "author": {
+      "name": "Charles Wesley",
+      "birthYear": 1707,
+      "deathYear": 1788
+    },
+    "tune": "Amsterdam",
+    "stanzas": [
+      {
+        "majestyVerse": 1,
+        "lines": [
+          "Praise the Lord Who reigns above,",
+          "And keeps His court below;",
+          "Praise the holy God of love,",
+          "And all His greatness show;",
+          "Praise Him for His noble deeds,",
+          "Praise Him for His matchless pow’r;",
+          "Him from Whom all good proceeds",
+          "Let earth and heav’n adore."
+        ]
+      },
+      {
+        "majestyVerse": 2,
+        "lines": [
+          "Jesus reigns, let earth be glad,",
+          "Let distant shores rejoice.",
+          "Heav’n proclaim His righteousness;",
+          "Earth sing with ev’ry voice.",
+          "Praise Him ev’ry tuneful string;",
+          "All the songs of heav’nly art,",
+          "All the pow’rs of music bring,",
+          "The music of the heart."
+        ]
+      },
+      {
+        "majestyVerse": 3,
+        "lines": [
+          "Him, in Whom they move and live,",
+          "Let ev’ry creature sing,",
+          "Glory to their Maker give,",
+          "And homage to their King.",
+          "Praise His everlasting name,",
+          "As in heav’n, on earth adored;",
+          "Praise the Lord in ev’ry breath,",
+          "Let all things praise the Lord."
+        ]
+      }
+    ]
+  }
+]
