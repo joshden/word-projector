@@ -22,6 +22,9 @@ body {
     cursor: pointer;
     text-decoration: underline dotted;
 }
+#presenter.presentation-active article header.top-line:hover, #presenter.presentation-active article li.top-line:hover {
+    text-decoration: line-through;
+}
 #presentation article {
     opacity: 0;
 }

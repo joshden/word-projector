@@ -6,6 +6,7 @@ $(function() {
     const $presenter = $('#presenter');
     const activeClass = 'active';
     const activeArticle = 'article.' + activeClass;
+    const topLineClass = 'top-line';
     let $presentationHtml = $();
     let $presentation = $();
     let $presenterAndPresentation = $();
@@ -106,31 +107,40 @@ $(function() {
         $presenter.find('article header, article li').click(function() {
             if (popup) {
                 $currentSelection = $(this);
-                const $article = $currentSelection.parents('article').first();
-                const articleSelector = `article:nth-of-type(${$article.prevAll('article').length + 1})`;
-
-                const isSwitchingArticle = $(articleSelector).get(0) !== $(activeArticle).get(0);
-                const scrollToSelector = articleSelector + (
-                    $currentSelection.is('header') ? '' 
-                    : `> ol:nth-of-type(${$currentSelection.parent().prevAll('ol').length + 1}) > li:nth-of-type(${$currentSelection.prevAll('li').length + 1})`);
                 
-                const popupScrollTop = $presentation.find(scrollToSelector).offset().top;
-
-                if (isSwitchingArticle) {
+                if ($currentSelection.hasClass(topLineClass)) {
                     unselectSong();
-                    $presentationHtml.stop(true);
-                    $presentationHtml.scrollTop(popupScrollTop);
-                    $presenterAndPresentation.find(articleSelector).addClass('active');
-                    $presentationHtml.find('title').text($article.find('header').text());
                 }
-
                 else {
-                    $presentationHtml.animate({
-                        scrollTop: popupScrollTop
-                    }, 1000);
+                    $presenterAndPresentation.find('.' + topLineClass).removeClass(topLineClass);
+
+                    const $article = $currentSelection.parents('article').first();
+                    const articleSelector = `article:nth-of-type(${$article.prevAll('article').length + 1})`;
+    
+                    const isSwitchingArticle = $(articleSelector).get(0) !== $(activeArticle).get(0);
+                    const scrollToSelector = articleSelector + (
+                        $currentSelection.is('header') ? '' 
+                        : `> ol:nth-of-type(${$currentSelection.parent().prevAll('ol').length + 1}) > li:nth-of-type(${$currentSelection.prevAll('li').length + 1})`);
+                    
+                    const popupScrollTop = $presentation.find(scrollToSelector).offset().top;
+    
+                    if (isSwitchingArticle) {
+                        unselectSong();
+                        $presentationHtml.stop(true);
+                        $presentationHtml.scrollTop(popupScrollTop);
+                        $presenterAndPresentation.find(articleSelector).addClass('active');
+                        $presentationHtml.find('title').text($article.find('header').text());
+                    }
+    
+                    else {
+                        $presentationHtml.animate({
+                            scrollTop: popupScrollTop
+                        }, 1000);
+                    }
+                    
+                    setLiveFramePosition();
                 }
-                
-                setLiveFramePosition();
+                $currentSelection.toggleClass(topLineClass);
             }
         });
     });
