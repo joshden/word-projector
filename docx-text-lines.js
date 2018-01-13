@@ -48,6 +48,7 @@ function processXml(data, resolve, reject) {
 
             let isParagraphZeroSpacingBefore = true;
             let isParagraphZeroSpacingAfter = true;
+            let isParagraphSpacingAfterDefined = false;
             if (p.hasOwnProperty('w:pPr')) {
                 p['w:pPr'].forEach(paraProp => {
                     if (paraProp.hasOwnProperty('w:pStyle')) {
@@ -70,6 +71,7 @@ function processXml(data, resolve, reject) {
                             else if (spacing.$['w:before'] === '100') {
                                 isParagraphZeroSpacingBefore = false;
                             }
+                            isParagraphSpacingAfterDefined = spacing.$.hasOwnProperty('w:after');
                             if (spacing.$['w:after'] === '0') {
                                 isParagraphZeroSpacingAfter = true;
                                 if (! spacing.$.hasOwnProperty('w:before')) {
@@ -83,6 +85,9 @@ function processXml(data, resolve, reject) {
                         });
                     }
                 });
+            }
+            if (! isParagraphSpacingAfterDefined) {
+                isParagraphZeroSpacingAfter = false;
             }
 
             if (!isParagraphZeroSpacingBefore && wasPreviousParagraphZeroSpacingAfter) {
