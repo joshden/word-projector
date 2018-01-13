@@ -46,10 +46,19 @@ function processXml(data, resolve, reject) {
             }
             addLine();
 
-            let isParagraphZeroSpacingBefore = false;
-            let isParagraphZeroSpacingAfter = false;
+            let isParagraphZeroSpacingBefore = true;
+            let isParagraphZeroSpacingAfter = true;
             if (p.hasOwnProperty('w:pPr')) {
                 p['w:pPr'].forEach(paraProp => {
+                    if (paraProp.hasOwnProperty('w:pStyle')) {
+                        paraProp['w:pStyle'].forEach(pStyle => {
+                            if (pStyle.$['w:val'] === 'NormalWeb') {
+                                isParagraphZeroSpacingBefore = false;
+                                isParagraphZeroSpacingAfter = false;
+                            }
+                        });
+                    }
+
                     if (paraProp.hasOwnProperty('w:spacing')) {
                         if (paraProp['w:spacing'].length !== 1) {
                             throw 'Expected 1 w:spacing, but found ' + paraProp['w:spacing'].length;
@@ -58,11 +67,17 @@ function processXml(data, resolve, reject) {
                             if (spacing.$['w:before'] === '0') {
                                 isParagraphZeroSpacingBefore = true;
                             }
+                            else if (spacing.$['w:before'] === '100') {
+                                isParagraphZeroSpacingBefore = false;
+                            }
                             if (spacing.$['w:after'] === '0') {
                                 isParagraphZeroSpacingAfter = true;
                                 if (! spacing.$.hasOwnProperty('w:before')) {
                                     isParagraphZeroSpacingBefore = true;
                                 }
+                            }
+                            else if (spacing.$['w:after'] === '100') {
+                                isParagraphZeroSpacingAfter = false;
                             }
                             spacings.add(JSON.stringify(spacing['$']));
                         });
