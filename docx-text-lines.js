@@ -37,6 +37,8 @@ function processXml(data, resolve, reject) {
         // console.log(JSON.stringify(paragraphs, null, 2));
 
         let wasPreviousParagraphZeroSpacingAfter = false;
+        let wasPreviousParagraphStyleNormalWeb = false;
+        let wasPreviousParagraphSpacingAfterDefined = false;
 
         paragraphs.forEach(p => {
             let outputLine = null;
@@ -49,11 +51,14 @@ function processXml(data, resolve, reject) {
             let isParagraphZeroSpacingBefore = true;
             let isParagraphZeroSpacingAfter = true;
             let isParagraphSpacingAfterDefined = false;
+            let isParagraphStyleNormalWeb = false;
+            let isParagraphLineSpacingSpecified = false;
             if (p.hasOwnProperty('w:pPr')) {
                 p['w:pPr'].forEach(paraProp => {
                     if (paraProp.hasOwnProperty('w:pStyle')) {
                         paraProp['w:pStyle'].forEach(pStyle => {
-                            if (pStyle.$['w:val'] === 'NormalWeb') {
+                            isParagraphStyleNormalWeb = pStyle.$['w:val'] === 'NormalWeb';
+                            if (isParagraphStyleNormalWeb) {
                                 isParagraphZeroSpacingBefore = false;
                                 isParagraphZeroSpacingAfter = false;
                             }
@@ -81,16 +86,17 @@ function processXml(data, resolve, reject) {
                             else if (spacing.$['w:after'] === '100') {
                                 isParagraphZeroSpacingAfter = false;
                             }
+                            isParagraphLineSpacingSpecified = spacing.$.hasOwnProperty('w:line');
                             spacings.add(JSON.stringify(spacing['$']));
                         });
                     }
                 });
             }
-            if (! isParagraphSpacingAfterDefined) {
-                isParagraphZeroSpacingAfter = false;
-            }
 
             if (!isParagraphZeroSpacingBefore && wasPreviousParagraphZeroSpacingAfter) {
+                addLine();
+            }
+            else if (isParagraphSpacingAfterDefined && ! wasPreviousParagraphSpacingAfterDefined && ! isParagraphStyleNormalWeb && ! wasPreviousParagraphStyleNormalWeb && ! isParagraphLineSpacingSpecified) {
                 addLine();
             }
 
@@ -126,6 +132,8 @@ function processXml(data, resolve, reject) {
                 addLine();
             }
             wasPreviousParagraphZeroSpacingAfter = isParagraphZeroSpacingAfter;
+            wasPreviousParagraphSpacingAfterDefined = isParagraphSpacingAfterDefined;
+            wasPreviousParagraphStyleNormalWeb = isParagraphStyleNormalWeb;
         });
 
         const lines = output
