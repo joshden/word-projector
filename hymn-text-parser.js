@@ -5,29 +5,32 @@ const path = process.argv[2];
 if (typeof path !== 'string' || path.trim() === '') {
     console.log('Usage: hymn-text-parser [docx-file-path]');
     console.log('  e.g. node hymn-text-parser.js data/#1-25.docx');
+    // console.log('       node hymn-text-parser.js data/*.docx');
     process.exit();
 }
+
+const songLocations = {
+    before: 0,
+    afterTitle: 1,
+    afterScripture: 2,
+    afterAuthor: 3,
+    afterTune: 4,
+    inStanzas: 5,
+};
+
+const songs = [];
+let id = 0;
 
 getDocxTextLines(path).then(lines => {
     // console.log(JSON.stringify(lines, null, 2));
 
-    const songLocations = {
-        before: 0,
-        afterTitle: 1,
-        afterScripture: 2,
-        afterAuthor: 3,
-        afterTune: 4,
-        inStanzas: 5,
-    };
-
-    const songs = [];
-    let id = 0;
     let currentSong = null;
     let currentStanza = null;
     let currentSongLocation = songLocations.before;
 
     lines.forEach((line, i) => {
         line = line.trimRight();
+        // console.log(line); return;
         if (currentSongLocation <= songLocations.before && line.length < 1) {
             return;
         }
@@ -62,17 +65,23 @@ getDocxTextLines(path).then(lines => {
         }
 
         else if (currentSongLocation === songLocations.afterScripture) {
-            const match = line.trim().match(/^By (.+?), (\d{4})\-(\d{4})?$/);
-            if (! match) {
+            line = line.trim();
+            const match = line.match(/^By (.+?), (\d{4})\-(\d{4})?$/);
+            if (match) {
+                currentSong.author = {name: match[1], birthYear: Number(match[2]), deathYear: match[3] === undefined ? null : Number(match[3])};
+            }
+            else if (line === 'Traditional') {
+                currentSong.author = {name: line, birthYear: null, deathYear: null}
+            }
+            else {
                 throw `Expected line ${i} to be the author info, but found: ${line}`;
             }
-            currentSong.author = {name: match[1], birthYear: Number(match[2]), deathYear: match[3] === undefined ? null : Number(match[3])};
             currentSongLocation = songLocations.afterAuthor;
         }
 
         else if (currentSongLocation === songLocations.afterAuthor) {
             const match = line.trim().match(/^Tune: (.+)$/);
-            if (match) {    
+            if (match) {
                 currentSong.tune = match[1];
                 currentSongLocation = songLocations.afterTune;
             }
