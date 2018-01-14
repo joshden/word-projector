@@ -75,9 +75,6 @@ glob(pattern, (err, files) => {
                 }
         
                 else if (currentSongLocation === songLocations.afterTitle) {
-                    if (line.trim() === 'A faithful man shall abound with blessings. Proverbs 28:20') {
-                        line = 'A faithful man shall abound with blessings. -Proverbs 28:20';
-                    }
                     const match = line.trim().match(/^(.+?) -(\w.+)$/);
                     if (! match) {
                         return songError(`Expected scripture quotation, but found: ${line}`);
