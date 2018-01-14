@@ -17,6 +17,7 @@ const songLocations = {
     afterAuthor: 3,
     afterTune: 4,
     inStanzas: 5,
+    skipToNextSong: 6
 };
 
 const songs = [];
@@ -42,6 +43,15 @@ glob(pattern, (err, files) => {
                 if (currentSongLocation <= songLocations.before && line.length < 1) {
                     return;
                 }
+
+                function lineError(message) {
+                    errors.push({path: path, lineNum: i, message: message});
+                    currentSongLocation = songLocations.skipToNextSong;
+                }
+                function songError(message) {
+                    errors.push({path: path, lineNum: i, majestyNumber: currentSong.majestyNumber, message: message});
+                    currentSongLocation = songLocations.skipToNextSong;
+                }
         
                 const startOfSongMatch = line.match(/^#(\d+) (.+)$/);
                 if (currentSongLocation === songLocations.before || (startOfSongMatch && currentSongLocation >= songLocations.inStanzas)) {
@@ -52,12 +62,16 @@ glob(pattern, (err, files) => {
                         songs.push(currentSong);
                     }
                     else {
-                        throw `Expected line ${i} to be the title of a song, but found: ${line}`;
+                        return lineError(`Expected the title of a song, but found: ${line}`);
                     }
+                }
+
+                else if (currentSongLocation === songLocations.skipToNextSong) {
+                    return;
                 }
         
                 else if (startOfSongMatch) {
-                    throw `Found line ${i} to unexpectedly be the title of a song: ${line}`;
+                    return songError(`Found unexpected title of a song: ${line}`);
                 }
         
                 else if (currentSongLocation === songLocations.afterTitle) {
@@ -66,7 +80,7 @@ glob(pattern, (err, files) => {
                     }
                     const match = line.trim().match(/^(.+?) -(\w.+)$/);
                     if (! match) {
-                        throw `Expected line ${i} to be the scripture quotation, but found: ${line}`;
+                        return songError(`Expected scripture quotation, but found: ${line}`);
                     }
                     currentSong.majestyScripture = {reference: match[2], text: match[1]};
                     currentSongLocation = songLocations.afterScripture;
@@ -84,7 +98,7 @@ glob(pattern, (err, files) => {
                         currentSong.author = {name: line, birthYear: null, deathYear: null}
                     }
                     else {
-                        throw `Expected line ${i} to be the author info, but found: ${line}`;
+                        return songError(`Expected author info, but found: ${line}`);
                     }
                     currentSongLocation = songLocations.afterAuthor;
                 }
@@ -106,7 +120,7 @@ glob(pattern, (err, files) => {
                                 currentSong.adaptedBy = {name: match[1], birthYear: Number(match[2]), deathYear: match[3] === undefined ? null : Number(match[3])};                    
                             }   
                             else {
-                                throw `Expected line ${i} to be the tune, but found: ${line}`;
+                                return songError(`Expected a tune, but found: ${line}`);
                             }
                         }
                     }
@@ -122,7 +136,7 @@ glob(pattern, (err, files) => {
                         const verseNumber = Number(match[1]);
                         const restOfLine = match[2];
                         if (currentStanza && currentStanza.majestyVerse + 1 !== verseNumber) {
-                            throw `Expected line ${i} to be stanza #${currentStanza.majestyVerse + 1}, but found: ${line}`;
+                            return songError(`Expected stanza #${currentStanza.majestyVerse + 1}, but found: ${line}`);
                         }
                         currentStanza = { majestyVerse: verseNumber, lines: [restOfLine] };
                         if (! currentSong.stanzas.length) {
@@ -132,7 +146,7 @@ glob(pattern, (err, files) => {
                     }
                     else {
                         if (! currentStanza) {
-                            throw `Expected line ${i} to be the beginning of a stanza, but found: ${line}`;
+                            return songError(`Expected the beginning of a stanza, but found: ${line}`);
                         }
                         else if (line.trim().startsWith('© Copyright')) {
                             currentSong.copyright = line.trim();
@@ -146,7 +160,7 @@ glob(pattern, (err, files) => {
                     }
                 }
             });
-        }).catch(rej => errors.push({path: path, message: rej}));
+        }).catch(msg => errors.push({path: path, message: msg}));
     });
 
     promise.then(() => {
@@ -162,7 +176,7 @@ glob(pattern, (err, files) => {
         if (errors.length) {
             process.exitCode = 1;
             errors.forEach(error => {
-                console.error(error.path, error.message);
+                console.error(error);
             });
         }
         else {
