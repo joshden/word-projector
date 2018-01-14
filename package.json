@@ -4,6 +4,7 @@
   "description": "Display song words on-screen for live events, like church services.",
   "main": "index.js",
   "dependencies": {
+    "glob": "^7.1.2",
     "jquery": "^3.2.1",
     "jquery-ui-dist": "^1.12.1",
     "jszip": "^3.1.5",
