@@ -30,6 +30,7 @@ getDocxTextLines(path).then(lines => {
 
     lines.forEach((line, i) => {
         line = line.trimRight();
+                i++;
         // console.log(line); return;
         if (currentSongLocation <= songLocations.before && line.length < 1) {
             return;
