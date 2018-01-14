@@ -74,9 +74,11 @@ glob(pattern, (err, files) => {
         
                 else if (currentSongLocation === songLocations.afterScripture) {
                     line = line.trim();
-                    const match = line.match(/^By (.+?), (\d{4})\-(\d{4})?$/);
+                    const match = line.match(/^By ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
                     if (match) {
-                        currentSong.author = {name: match[1], birthYear: Number(match[2]), deathYear: match[3] === undefined ? null : Number(match[3])};
+                        const birthYear = match[3] === undefined ? null : Number(match[3]);
+                        const deathYear = match[4] === undefined ? null : Number(match[4]);
+                        currentSong.author = {name: match[1], birthYear: birthYear, deathYear: deathYear};
                     }
                     else if (line === 'Traditional') {
                         currentSong.author = {name: line, birthYear: null, deathYear: null}
