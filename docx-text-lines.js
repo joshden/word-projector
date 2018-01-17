@@ -100,33 +100,34 @@ function processXml(data, resolve, reject) {
                 addLine();
             }
 
-            if (p.hasOwnProperty('w:r')) {
-                p['w:r'].forEach(run => {
-                    if (run.hasOwnProperty('$$')) {
-                        run['$$'].forEach(el => {
-                            if (el['#name'] === 'w:br') {
-                                addLine();
+            const runs = getAllRuns(p);
+            // console.log(JSON.stringify(runs, null, 2));
+
+            runs.forEach(run => {
+                if (run.hasOwnProperty('$$')) {
+                    run['$$'].forEach(el => {
+                        if (el['#name'] === 'w:br') {
+                            addLine();
+                        }
+                        else if (el['#name'] === 'w:rPr' || el['#name'] === 'w:lastRenderedPageBreak') {
+                            // ignore this text property
+                        }
+                        else if (el['#name'] === 'w:t') {
+                            if (el.hasOwnProperty('_')) {
+                                // console.log(`[${el._}]`);
+                                outputLine.push(el._);
                             }
-                            else if (el['#name'] === 'w:rPr' || el['#name'] === 'w:lastRenderedPageBreak') {
-                                // ignore this text property
+                            else if (el.$ && el.$['xml:space'] === 'preserve') {
+                                // console.log(el);
+                                outputLine.push(' ');
                             }
-                            else if (el['#name'] === 'w:t') {
-                                if (el.hasOwnProperty('_')) {
-                                    // console.log(`[${el._}]`);
-                                    outputLine.push(el._);
-                                }
-                                else if (el.$ && el.$['xml:space'] === 'preserve') {
-                                    // console.log(el);
-                                    outputLine.push(' ');
-                                }
-                            }
-                            else {
-                                throw 'Unexpected tag ' + el['#name'];
-                            }
-                        });
-                    }
-                })
-            }
+                        }
+                        else {
+                            throw 'Unexpected tag ' + el['#name'];
+                        }
+                    });
+                }
+            });
 
             if (! isParagraphZeroSpacingAfter) {
                 addLine();
@@ -144,4 +145,16 @@ function processXml(data, resolve, reject) {
         // console.log(JSON.stringify(lines, null, 2));
         // console.log(spacings);
     });
+}
+
+function getAllRuns(obj, runs = []) {
+    if (obj["#name"] === 'w:r') {
+        runs.push(obj)
+    }
+
+    if (obj.$$) {
+        obj.$$.forEach(el => getAllRuns(el, runs))
+    }
+
+    return runs;
 }
