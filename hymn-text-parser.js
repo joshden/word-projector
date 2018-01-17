@@ -52,6 +52,9 @@ glob(pattern, (err, files) => {
                     errors.push({path: path, lineNum: i, majestyNumber: currentSong.majestyNumber, message: message});
                     currentSongLocation = songLocations.skipToNextSong;
                 }
+                function songWarning(message) {
+                    errors.push({path: path, lineNum: i, majestyNumber: currentSong.majestyNumber, message: message, warning: true});
+                }
         
                 const startOfSongMatch = line.match(/^#(\d+) (.+)$/);
                 if (currentSongLocation === songLocations.before || (startOfSongMatch && currentSongLocation >= songLocations.inStanzas)) {
@@ -75,6 +78,9 @@ glob(pattern, (err, files) => {
                 }
         
                 else if (currentSongLocation === songLocations.afterTitle) {
+                    if (line === 'Blessed be God…the Father of mercies, and the God of all comfort. 2 Corinthians 1:3') {
+                        line = 'Blessed be God…the Father of mercies, and the God of all comfort. -2 Corinthians 1:3';
+                    }
                     const match = line.trim().match(/^(.+?) -(\w.+)$/);
                     if (! match) {
                         return songError(`Expected scripture quotation, but found: ${line}`);
@@ -85,17 +91,53 @@ glob(pattern, (err, files) => {
         
                 else if (currentSongLocation === songLocations.afterScripture) {
                     line = line.trim();
-                    const match = line.match(/^By ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
-                    if (match) {
-                        const birthYear = match[3] === undefined ? null : Number(match[3]);
-                        const deathYear = match[4] === undefined ? null : Number(match[4]);
-                        currentSong.author = {name: match[1], birthYear: birthYear, deathYear: deathYear};
+
+                    const matchTranslatedBy = line.match(/[;,] (tr\.|translated by) ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
+                    if (matchTranslatedBy) {
+                        const birthYear = matchTranslatedBy[4] === undefined ? null : Number(matchTranslatedBy[4]);
+                        const deathYear = matchTranslatedBy[5] === undefined ? null : Number(matchTranslatedBy[5]);
+                        currentSong.translatedBy = {name: matchTranslatedBy[2], birthYear: birthYear, deathYear: deathYear};
+                        line = line.substr(0, line.length - matchTranslatedBy[0].length);
+                    }
+
+                    const matchAdaptedBy = line.match(/[;,] adapt\.( [Bb]y)? ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
+                    if (matchAdaptedBy) {
+                        const birthYear = matchAdaptedBy[4] === undefined ? null : Number(matchAdaptedBy[4]);
+                        const deathYear = matchAdaptedBy[5] === undefined ? null : Number(matchAdaptedBy[5]);
+                        currentSong.adaptedBy = {name: matchAdaptedBy[2], birthYear: birthYear, deathYear: deathYear};
+                        line = line.substr(0, line.length - matchAdaptedBy[0].length);
+                    }
+
+                    const matchAuthor2 = line.match(/; ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
+                    if (matchAuthor2) {
+                        const birthYear = matchAuthor2[3] === undefined ? null : Number(matchAuthor2[3]);
+                        const deathYear = matchAuthor2[4] === undefined ? null : Number(matchAuthor2[4]);
+                        currentSong.author2 = {name: matchAuthor2[1], birthYear: birthYear, deathYear: deathYear};
+                        line = line.substr(0, line.length - matchAuthor2[0].length);
+                    }
+
+                    const matchAuthorOptionalYears = line.match(/^By ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
+                    const matchAuthorAndCentury = line.match(/^By ([^,]+), (18|19|20)th century$/);
+                    const matchAuthorNameWithComma = line.match(/^By (.+?), (\d{4})\-(\d{4})$/);
+                    if (matchAuthorOptionalYears) {
+                        const birthYear = matchAuthorOptionalYears[3] === undefined ? null : Number(matchAuthorOptionalYears[3]);
+                        const deathYear = matchAuthorOptionalYears[4] === undefined ? null : Number(matchAuthorOptionalYears[4]);
+                        currentSong.author = {name: matchAuthorOptionalYears[1], birthYear: birthYear, deathYear: deathYear};
+                    }
+                    else if (matchAuthorAndCentury) {
+                        currentSong.author = {name: matchAuthorAndCentury[1], century: Number(matchAuthorAndCentury[2])};
+                    }
+                    else if (matchAuthorNameWithComma) {
+                        const birthYear = Number(matchAuthorNameWithComma[2]);
+                        const deathYear = Number(matchAuthorNameWithComma[3]);
+                        currentSong.author = {name: matchAuthorNameWithComma[1], birthYear: birthYear, deathYear: deathYear};
                     }
                     else if (line === 'Traditional') {
                         currentSong.author = {name: line, birthYear: null, deathYear: null}
                     }
                     else {
-                        return songError(`Expected author info, but found: ${line}`);
+                        currentSong.author = line;
+                        songWarning(`Expected author info, but found: ${line}`);
                     }
                     currentSongLocation = songLocations.afterAuthor;
                 }
@@ -170,7 +212,7 @@ glob(pattern, (err, files) => {
             });
         });
 
-        if (errors.length) {
+        if (errors.filter(e => !e.warning).length) {
             process.exitCode = 1;
             errors.forEach(error => {
                 console.error(error);
