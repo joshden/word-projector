@@ -120,6 +120,10 @@ glob(pattern, (err, files) => {
                         currentSongLocation = songLocations.afterFirstAuthor;
                         songWarning(`Expected multiple authors on separate lines, but found: ${line}`);
                     }
+                    else if (line.match(/\d{4}[^-]/)) {
+                        currentSongLocation = songLocations.afterFirstAuthor;
+                        songWarning(`Expected only one year or year range on an author line, but found: ${line}`);
+                    }
                     if (matchAuthorOptionalYears) {
                         const birthYear = matchAuthorOptionalYears[3] === undefined ? null : Number(matchAuthorOptionalYears[3]);
                         const deathYear = matchAuthorOptionalYears[4] === undefined ? null : Number(matchAuthorOptionalYears[4]);
