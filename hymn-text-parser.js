@@ -78,9 +78,6 @@ glob(pattern, (err, files) => {
                 }
         
                 else if (currentSongLocation === songLocations.afterTitle) {
-                    if (line === 'Blessed be God…the Father of mercies, and the God of all comfort. 2 Corinthians 1:3') {
-                        line = 'Blessed be God…the Father of mercies, and the God of all comfort. -2 Corinthians 1:3';
-                    }
                     const match = line.trim().match(/^(.+?) -(\w.+)$/);
                     if (! match) {
                         return songError(`Expected scripture quotation, but found: ${line}`);
