@@ -12,6 +12,21 @@ $.get('data/songs.json', allSongs => {
                 .map(id => allSongs.find(song => song.id === id));
 
             $('#presenter').trigger('songs:change', [selectedSongs]);
+        },
+
+        openOnFocus: false,
+        onInitialize: function() {
+            var that = this;
+            this.$control.on('mousedown', function() {
+                if ($(this).find('input').is(':focus') && ! this.didClose) {
+                    this.didClose = true;
+                    that.close();
+                }
+                else {
+                    this.didClose = false;
+                    that.open();
+                }
+            });
         }
     });
 });
