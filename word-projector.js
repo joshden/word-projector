@@ -87,16 +87,46 @@ $(function() {
     });
 
     $presenter.on('songs:change', (e, songs) => {
+        function authorText(song) {
+            const author = song.author;
+            if (author.hasOwnProperty('scriptureRef')) {
+                return `From ${author.scriptureRef}`;
+            }
+            else if (author.hasOwnProperty('name')) {
+                return `By ${author.name}`;
+            }
+            return '';
+        }
+        function escape(text) {
+            const escaped = _.escape(text);
+            
+            const matched = escaped.match(/( +)([^ ]+)$/);
+            if (matched) {
+                const beforeLastSpaces = escaped.substr(0, escaped.length - matched[0].length);
+                const nbspLastSpaces = matched[1].replace(/ /g, '&nbsp;');
+                const afterLastSpaces = matched[2];
+                return beforeLastSpaces + nbspLastSpaces + afterLastSpaces;
+            }
+            else {
+                return escaped;
+            }
+        }
         const wordsHtml = songs.map(song => `
             <article>
-                <header>${_.escape(song.title)}</header>            
+                <header>
+                    <h1>${escape(song.title)}</h1>
+                    <h2>${escape(authorText(song))}</h2>
+                </header>
                 ${song.stanzas.map(stanza => stanza.lines).map(lines => `
                 <ol>${lines.map(line => `
-                    <li>${_.escape(line)}</li>`).join('')}
+                    <li>${escape(line)}</li>`).join('')}
                 </ol>`).join('\n')
                 }
 
-                <footer>${_.escape(song.title)}</footer>
+                <footer>
+                    <h1>${escape(song.title)}</h1>
+                    <h2>${escape(authorText(song))}</h2>
+                </footer>
             </article>
         `).join('');
 

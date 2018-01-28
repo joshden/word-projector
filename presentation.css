@@ -1,9 +1,11 @@
+@import url('./node_modules/open-sans-all/css/open-sans.css');
 html {
     font-size: 16px;
 }
 body {
     background-color: #111;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    /* font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; */
+    font-family: 'Open Sans';
 }
 #liveFrame {
     position: absolute;
@@ -38,8 +40,23 @@ article {
     padding: 0.4em;
 }
 header {
-    font-weight: bold;
+    /* font-weight: bold; */
     text-align: center;
+}
+h1, h2 {
+    margin: 0;
+    padding: 0;
+}
+footer {
+    font-size: 0.6em;
+    text-align: center;
+    opacity: 0.8;
+}
+h1 {
+    font-size: 1.3em;
+}
+h2 {
+    font-size: 1em;
 }
 ol {
     padding: 0;
@@ -56,8 +73,4 @@ li {
 }
 li:empty {
     min-height: 0.8em;
-}
-footer {
-    font-size: 0.8em;
-    text-align: center;
 }
