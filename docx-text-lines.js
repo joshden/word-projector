@@ -3,7 +3,7 @@ const parseString = require('xml2js').parseString;
 const jszip = require('jszip');
 
 
-module.exports = function getDocxTextLines(filePath) {
+module.exports = function getDocxTextLines(filePath, indicateIfLineHasAnyBold = false) {
     return new Promise((resolve, reject) => {
         fs.readFile(filePath, function(err, data) {
             if (err) {
@@ -12,7 +12,7 @@ module.exports = function getDocxTextLines(filePath) {
             jszip.loadAsync(data).then(zip => {
                 const file = zip.file('word/document.xml');
                 file.async('string').then(data => {
-                    processXml(data, resolve, reject);
+                    processXml(data, resolve, reject, indicateIfLineHasAnyBold);
                 });
             });
         });
@@ -24,7 +24,7 @@ module.exports = function getDocxTextLines(filePath) {
 //     processXml(data);
 // });
 
-function processXml(data, resolve, reject) {
+function processXml(data, resolve, reject, indicateIfLineHasAnyBold) {
     parseString(data, {/*ignoreAttrs: true,*/ preserveChildrenOrder: true, explicitChildren: true}, function (err, result) {
         if (err) {
             reject(err);
@@ -41,10 +41,12 @@ function processXml(data, resolve, reject) {
         let wasPreviousParagraphSpacingAfterDefined = false;
 
         paragraphs.forEach(p => {
-            let outputLine = null;
+            let currentLine = null;
+            let currentSegments = null;
             function addLine() {
-                outputLine = [];
-                output.push(outputLine);
+                currentSegments = [];
+                currentLine = {segments: currentSegments};
+                output.push(currentLine);
             }
             addLine();
 
@@ -90,6 +92,8 @@ function processXml(data, resolve, reject) {
                             spacings.add(JSON.stringify(spacing['$']));
                         });
                     }
+
+                    maybeSetLineBoldIfRunPr(indicateIfLineHasAnyBold, paraProp, currentLine);
                 });
             }
 
@@ -115,11 +119,11 @@ function processXml(data, resolve, reject) {
                         else if (el['#name'] === 'w:t') {
                             if (el.hasOwnProperty('_')) {
                                 // console.log(`[${el._}]`);
-                                outputLine.push(el._);
+                                currentSegments.push(el._);
                             }
                             else if (el.$ && el.$['xml:space'] === 'preserve') {
                                 // console.log(el);
-                                outputLine.push(' ');
+                                currentSegments.push(' ');
                             }
                         }
                         else {
@@ -127,6 +131,8 @@ function processXml(data, resolve, reject) {
                         }
                     });
                 }
+
+                maybeSetLineBoldIfRunPr(indicateIfLineHasAnyBold, run, currentLine);
             });
 
             if (! isParagraphZeroSpacingAfter) {
@@ -138,8 +144,20 @@ function processXml(data, resolve, reject) {
         });
 
         const lines = output
-            .map(segments => segments.join(''))
-            .reduce((accum, line) => accum.concat(line.split(/ {70,}/)), []);
+            .map(line => {
+                line.text = line.segments.join('');
+                delete line.segments;
+                return line;
+            })
+            .reduce((accum, origLine) => {
+                const longLineBreaks = origLine.text.split(/ {70,}/);
+                longLineBreaks.forEach(brokenLine => {
+                    const newLine = JSON.parse(JSON.stringify(origLine));
+                    newLine.text = brokenLine;
+                    accum.push(newLine);
+                });
+                return accum;
+            }, []);
 
         resolve(lines);
         // console.log(JSON.stringify(lines, null, 2));
@@ -157,4 +175,14 @@ function getAllRuns(obj, runs = []) {
     }
 
     return runs;
+}
+
+function maybeSetLineBoldIfRunPr(indicateIfLineHasAnyBold, paraPropOrRunEl, currentLine) {
+    if (indicateIfLineHasAnyBold && paraPropOrRunEl.hasOwnProperty('w:rPr')) {
+        paraPropOrRunEl['w:rPr'].forEach(rPr => {
+            if (rPr.hasOwnProperty('w:b')) {
+                currentLine.hasAnyBold = true;
+            }
+        });
+    }
 }
