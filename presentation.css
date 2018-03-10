@@ -71,6 +71,9 @@ li {
     margin-bottom: 0.2em;
     margin-right: 0em;
 }
+li:first-letter {
+    text-transform: capitalize;
+}
 li:empty {
     min-height: 0.8em;
 }
