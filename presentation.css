@@ -36,7 +36,13 @@ body {
 }
 article {
     color: #eee;
-    font-size: 6.25em;
+    font-size: calc(6.25em * 1920 / 1920); /* calc(6.25em * 1024 / 1920); */
+        /*  This allows having a consistent size with different resolutions:
+            baseSize * actualWidth / baseWidth
+                baseSize: font size for display of baseWidth pixels 
+                actualWidth: actual pixel width of display
+                baseWidth: pixel width relative to baseSize
+        */
     padding: 0.4em;
 }
 header {
