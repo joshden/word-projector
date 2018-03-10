@@ -18,7 +18,7 @@ const songLocations = {
     afterTitle: 1,
     afterScripture: 2,
     afterFirstAuthor: 3,
-    afterTune: 4,
+    afterHeader: 4,
     inStanzas: 5,
     skipToNextSong: 6
 };
@@ -37,6 +37,7 @@ glob(pattern, (err, files) => {
             // console.log(JSON.stringify(lines, null, 2));
             let currentSong = null;
             let currentStanza = null;
+            let isScriptureSong = false;
             let currentSongLocation = songLocations.before;
         
             lines.forEach((line, i) => {
@@ -59,10 +60,11 @@ glob(pattern, (err, files) => {
                     errors.push({path: path, lineNum: i, majestyNumber: currentSong.majestyNumber, message: message, warning: true});
                 }
         
-                const startOfSongMatch = line.match(/^#(\d+) (.+)$/);
+                const startOfSongMatch = line.match(/^(SS:|#(\d+)) (.+)$/);
                 if (currentSongLocation === songLocations.before || (startOfSongMatch && currentSongLocation >= songLocations.inStanzas)) {
                     if (startOfSongMatch) {
-                        currentSong = { id: ++id, title: startOfSongMatch[2], majestyNumber: Number(startOfSongMatch[1]), stanzas: [] };
+                        isScriptureSong = startOfSongMatch[1] === 'SS:';
+                        currentSong = { id: ++id, title: startOfSongMatch[3], majestyNumber: isScriptureSong ? undefined : Number(startOfSongMatch[2]), stanzas: [] }
                         currentStanza = null;
                         currentSongLocation = songLocations.afterTitle;
                         songs.push(currentSong);
@@ -81,12 +83,22 @@ glob(pattern, (err, files) => {
                 }
         
                 else if (currentSongLocation === songLocations.afterTitle) {
-                    const match = line.trim().match(/^(.+?) -(\w.+)$/);
-                    if (! match) {
-                        return songError(`Expected scripture quotation, but found: ${line}`);
+                    if (isScriptureSong) {
+                        const match = line.trim().match(/^-(\w.+)$/);
+                        if (! match) {
+                            return songError(`Expected scripture song reference, but found: ${line}`);
+                        }
+                        currentSong.author = { scriptureRef: match[1] };
+                        currentSongLocation = songLocations.afterHeader;
                     }
-                    currentSong.majestyScripture = {reference: match[2], text: match[1]};
-                    currentSongLocation = songLocations.afterScripture;
+                    else {
+                        const match = line.trim().match(/^(.+?) -(\w.+)$/);
+                        if (! match) {
+                            return songError(`Expected scripture quotation, but found: ${line}`);
+                        }
+                        currentSong.majestyScripture = {reference: match[2], text: match[1]};
+                        currentSongLocation = songLocations.afterScripture;
+                    }
                 }
 
                 else if (currentSongLocation === songLocations.afterScripture || currentSongLocation === songLocations.afterFirstAuthor) {
@@ -165,7 +177,7 @@ glob(pattern, (err, files) => {
                     }
                     else if (matchTune) {
                         currentSong.tune = matchTune[1];
-                        currentSongLocation = songLocations.afterTune;
+                        currentSongLocation = songLocations.afterHeader;
                     }
                     else if (matchArrangedBy) {
                         currentSong.arrangedBy = {name: matchArrangedBy[1], birthYear: Number(matchArrangedBy[2]), deathYear: matchArrangedBy[3] === undefined ? null : Number(matchArrangedBy[3])};                    
@@ -195,11 +207,11 @@ glob(pattern, (err, files) => {
                     }
                 }
         
-                else if (currentSongLocation === songLocations.afterTune && line.length < 1) {
+                else if (currentSongLocation === songLocations.afterHeader && line.length < 1) {
                     return;
                 }
         
-                else if (currentSongLocation === songLocations.afterTune || currentSongLocation === songLocations.inStanzas) {
+                else if (currentSongLocation === songLocations.afterHeader || currentSongLocation === songLocations.inStanzas) {
                     const match = line.trim().match(/^(\d+)\. (.+)$/);
                     if (match) {
                         const verseNumber = Number(match[1]);
