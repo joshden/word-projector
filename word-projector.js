@@ -87,6 +87,9 @@ $(function() {
     });
 
     $presenter.on('songs:change', (e, songs) => {
+        function hymnalNumber(song) {
+            return song.majestyNumber ? ` #${song.majestyNumber.toFixed()}` : '';
+        }
         function authorText(song) {
             const author = song.author;
             if (author.hasOwnProperty('scriptureRef')) {
@@ -128,7 +131,7 @@ $(function() {
         const wordsHtml = songs.map(song => `
             <article>
                 <header>
-                    <h1>${escape(song.title)}</h1>
+                    <h1>${escape(song.title)}${hymnalNumber(song)}</h1>
                     <h2>${escape(authorText(song))}</h2>
                 </header>
                 ${stanzasAndFooter(song)}
