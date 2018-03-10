@@ -97,6 +97,20 @@ $(function() {
             }
             return '';
         }
+        function stanzasAndFooter(song) {
+            return song.copyright ? '' : `
+                ${song.stanzas.map(stanza => stanza.lines).map(lines => `
+                <ol>${lines.map(line => `
+                    <li>${escape(line)}</li>`).join('')}
+                </ol>`).join('\n')
+                }
+
+                <footer>
+                    <h1>${escape(song.title)}</h1>
+                    <h2>${escape(authorText(song))}</h2>
+                </footer>
+            `;
+        }
         function escape(text) {
             const escaped = _.escape(text);
             
@@ -117,16 +131,7 @@ $(function() {
                     <h1>${escape(song.title)}</h1>
                     <h2>${escape(authorText(song))}</h2>
                 </header>
-                ${song.stanzas.map(stanza => stanza.lines).map(lines => `
-                <ol>${lines.map(line => `
-                    <li>${escape(line)}</li>`).join('')}
-                </ol>`).join('\n')
-                }
-
-                <footer>
-                    <h1>${escape(song.title)}</h1>
-                    <h2>${escape(authorText(song))}</h2>
-                </footer>
+                ${stanzasAndFooter(song)}
             </article>
         `).join('');
 
