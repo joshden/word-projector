@@ -7,6 +7,9 @@ if (typeof pattern !== 'string' || pattern.trim() === '') {
     console.log('Usage: hymn-text-parser docx-file-path');
     console.log('  e.g. node hymn-text-parser.js data/#1-25.docx');
     console.log(`       node hymn-text-parser.js 'data/docx/#*.docx'`);
+    console.log('');
+    console.log(`  Note: The single quotes might be required to prevent`);
+    console.log(`        the shell from glob'ing a single file.`);
     process.exit();
 }
 
