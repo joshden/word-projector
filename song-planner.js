@@ -1,4 +1,6 @@
 $.get('data/songs.json', allSongs => {
+    let id = 0;
+    allSongs.forEach(song => song.id = ++id);
     $('#songs').selectize({
         plugins: ['remove_button', 'drag_drop', 'restore_on_backspace'],
         maxItems: null,
