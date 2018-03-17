@@ -101,7 +101,7 @@ $(function() {
             return '';
         }
         function stanzasAndFooter(song) {
-            return song.copyright ? '' : `
+            return song.copyright ? '<footer><h1>(Words only in hymnal)</h1></footer>' : `
                 ${song.stanzas.map(stanza => stanza.lines).map(lines => `
                 <ol>${lines.map(line => `
                     <li>${escape(line)}</li>`).join('')}
