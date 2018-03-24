@@ -112,6 +112,7 @@ glob(pattern, (err, files) => {
                     const matchAuthorBornYear = line.match(/^By (.+?), b\. (\d{4})$/);
                     const matchByWithEndingYear = line.match(/^By (.+?), (\d{4})$/);
                     const matchBasedOn = line.match(/^Based on (.+), (\d{4})$/);
+                    const matchScripture = line.match(/^Scripture: (.+)$/);
                     const matchStanza = line.match(/^St. (\d(,\d)*) ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
                     const matchTune = line.match(/^Tune: (.+)$/);
                     const matchArrangedBy = line.match(/^Arr\. (.+?), (\d{4})\-(\d{4})?$/);
@@ -171,6 +172,10 @@ glob(pattern, (err, files) => {
                     }
                     else if (matchBasedOn) {
                         author = {basedOn: matchBasedOn[1], year: Number(matchBasedOn[2])};
+                        currentSongLocation = songLocations.afterFirstAuthor;
+                    }
+                    else if (matchScripture) {
+                        author = {scripture: matchScripture[1]};
                         currentSongLocation = songLocations.afterFirstAuthor;
                     }
                     else if (matchByWithEndingYear) {
