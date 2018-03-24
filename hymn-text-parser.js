@@ -1,5 +1,6 @@
 const getDocxTextLines = require('./docx-text-lines');
 const glob = require('glob');
+const fs = require('fs');
 
 const pattern = process.argv[2];
 
@@ -32,7 +33,7 @@ glob(pattern, (err, files) => {
 
     let promise = Promise.resolve();
 
-    files.forEach(path => {
+    files.filter(file => fs.statSync(file).size > 0).forEach(path => {
         promise = promise.then(() => getDocxTextLines(path)).then(lines => {
             // console.log(JSON.stringify(lines, null, 2));
             let currentSong = null;
