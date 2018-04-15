@@ -37,6 +37,12 @@ node hymn-text-parser.js songs.sample.docx > data/songs.json
 node hymn-text-parser.js data/songs.docx > data/songs.json
 ```
 
+### Populate with all .docx files in `data/files/Hymns`
+
+```bash
+node hymn-text-parser.js 'data/files/Hymns/*.docx' > data/songs.json
+```
+
 ## Running word-projector
 
 1. In the root directory (with this README), start the server:
