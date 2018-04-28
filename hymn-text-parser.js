@@ -94,10 +94,12 @@ glob(pattern, (err, files) => {
                     }
                     else {
                         const match = line.trim().match(/^(.+?) -(\w.+)$/);
-                        if (! match) {
+                        if (match) {
+                            currentSong.majestyScripture = {reference: match[2], text: match[1]};
+                        }
+                        else if (! line.toLowerCase().includes('(no scripture reference)')) {
                             return songError(`Expected scripture quotation, but found: ${line}`);
                         }
-                        currentSong.majestyScripture = {reference: match[2], text: match[1]};
                         currentSongLocation = songLocations.afterScripture;
                     }
                 }
