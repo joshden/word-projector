@@ -12,7 +12,7 @@ module.exports = function getDocxTextLines(filePath) {
             jszip.loadAsync(data).then(zip => {
                 const file = zip.file('word/document.xml');
                 file.async('string').then(data => {
-                    processXml(data, resolve, reject);
+                    processXml(filePath, data, resolve, reject);
                 });
             });
         });
@@ -24,7 +24,7 @@ module.exports = function getDocxTextLines(filePath) {
 //     processXml(data);
 // });
 
-function processXml(data, resolve, reject) {
+function processXml(filePath, data, resolve, reject) {
     parseString(data, {/*ignoreAttrs: true,*/ preserveChildrenOrder: true, explicitChildren: true}, function (err, result) {
         if (err) {
             reject(err);
@@ -122,8 +122,11 @@ function processXml(data, resolve, reject) {
                                 outputLine.push(' ');
                             }
                         }
+                        else if (el['#name'] === 'w:tab') {
+                            outputLine.push('   ');
+                        }
                         else {
-                            throw 'Unexpected tag ' + el['#name'];
+                            throw `Unexpected tag ${el['#name']} in file ${filePath}`;
                         }
                     });
                 }
