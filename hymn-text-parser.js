@@ -39,6 +39,7 @@ glob(pattern, (err, files) => {
             let currentSong = null;
             let currentStanza = null;
             let isScriptureSong = false;
+            let isNonMajestySong = false;
             let currentSongLocation = songLocations.before;
         
             lines.forEach((line, i) => {
@@ -65,9 +66,11 @@ glob(pattern, (err, files) => {
                 if (currentSongLocation === songLocations.before || (startOfSongMatch && currentSongLocation >= songLocations.inStanzas)) {
                     if (startOfSongMatch) {
                         isScriptureSong = startOfSongMatch[1] === 'SS:';
-                        currentSong = { id: ++id, title: startOfSongMatch[3], majestyNumber: isScriptureSong ? undefined : Number(startOfSongMatch[2]), stanzas: [] }
+                        isNonMajestySong = startOfSongMatch[1] === '#0';
+                        const majestyNumber = (isScriptureSong || isNonMajestySong) ? undefined : Number(startOfSongMatch[2])
+                        currentSong = { id: ++id, title: startOfSongMatch[3], majestyNumber: majestyNumber, stanzas: [] }
                         currentStanza = null;
-                        currentSongLocation = songLocations.afterTitle;
+                        currentSongLocation = isNonMajestySong ? songLocations.afterScripture : songLocations.afterTitle;
                         songs.push(currentSong);
                     }
                     else {
@@ -201,6 +204,9 @@ glob(pattern, (err, files) => {
                     }
                     else if (matchTranslatedBy) {
                         currentSong.translatedBy = {name: matchTranslatedBy[1], birthYear: Number(matchTranslatedBy[2]), deathYear: matchTranslatedBy[3] === undefined ? null : Number(matchTranslatedBy[3])};                    
+                    }
+                    else if (currentSongLocation >= songLocations.afterFirstAuthor && line.length < 1 && isNonMajestySong) {
+                        currentSongLocation = songLocations.afterHeader;
                     }
                     else {
                         songError(`Expected a tune, but found: ${line}`);
