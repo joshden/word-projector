@@ -98,7 +98,36 @@ $(function() {
             else if (author.hasOwnProperty('name')) {
                 return `By ${author.name}`;
             }
+            else if (author.hasOwnProperty('basedOn')) {
+                return `Based on ${author.basedOn}`;
+            }
+            else if (author.hasOwnProperty('source')) {
+                return author.source;
+            }
+            else if (author.hasOwnProperty('scripture')) {
+                return author.scripture;
+            }
+            else if (author.hasOwnProperty('byWork')) {
+                return author.byWork;
+            }
+            else if (author.traditional) {
+                return 'Traditional'
+            }
+            else if (typeof author === 'string') {
+                return author;
+            }
             return '';
+        }
+        function fullAuthorText(song) {
+            let fullText = authorText(song);
+            const props = ['arrangedBy', 'adaptedBy', 'translatedBy', 'versifiedBy'];
+            Object.getOwnPropertyNames(song).filter(prop => props.includes(prop)).forEach(propName => {
+                if (fullText) {
+                    fullText += '; ';
+                }
+                fullText += propName.substr(0, propName.length-2) + ' by ' + song[propName].name;
+            });
+            return fullText
         }
         function stanzasAndFooter(song) {
             return song.copyright ? '<footer><h1>(Words only in hymnal)</h1></footer>' : `
@@ -110,7 +139,7 @@ $(function() {
 
                 <footer>
                     <h1>${escape(song.title)}</h1>
-                    <h2>${escape(authorText(song))}</h2>
+                    <h2>${escape(fullAuthorText(song))}</h2>
                 </footer>
             `;
         }

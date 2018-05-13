@@ -78,7 +78,7 @@ li {
     margin-right: 0em;
     white-space: pre-wrap;
 }
-li:first-letter {
+li:first-letter, article h1:first-letter, article h2:first-letter {
     text-transform: capitalize;
 }
 li:empty {

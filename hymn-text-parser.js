@@ -123,6 +123,8 @@ glob(pattern, (err, files) => {
                     const matchArrangedBy = line.match(/^Arr\. (.+?), (\d{4})\-(\d{4})?$/);
                     const matchAdaptedBy = line.match(/^Adapted by (.+?), (\d{4})\-(\d{4})?$/);
                     const matchTranslatedBy = line.match(/^Translated by (.+?), (\d{4})\-(\d{4})?$/);
+                    const matchVersifiedBy = line.match(/^Versified by (.+?), (\d{4})\-(\d{4})?$/);
+                    const matchSource = line.match(/^Source: (.+)$/);
 
                     if (line.match(/[,;] tr. /i)) {
                         currentSongLocation = songLocations.afterFirstAuthor;
@@ -187,6 +189,10 @@ glob(pattern, (err, files) => {
                         author = {byWork: matchByWithEndingYear[1], year: Number(matchByWithEndingYear[2])};
                         currentSongLocation = songLocations.afterFirstAuthor;
                     }
+                    else if (matchSource) {
+                        author = {source: matchSource[1]};
+                        currentSongLocation = songLocations.afterFirstAuthor;
+                    }
                     else if (currentSongLocation === songLocations.afterScripture) {
                         author = line;
                         currentSongLocation = songLocations.afterFirstAuthor;
@@ -197,13 +203,16 @@ glob(pattern, (err, files) => {
                         currentSongLocation = songLocations.afterHeader;
                     }
                     else if (matchArrangedBy) {
-                        currentSong.arrangedBy = {name: matchArrangedBy[1], birthYear: Number(matchArrangedBy[2]), deathYear: matchArrangedBy[3] === undefined ? null : Number(matchArrangedBy[3])};                    
+                        currentSong.arrangedBy = {name: matchArrangedBy[1], birthYear: Number(matchArrangedBy[2]), deathYear: matchArrangedBy[3] === undefined ? null : Number(matchArrangedBy[3])};
                     }
                     else if (matchAdaptedBy) {
-                        currentSong.adaptedBy = {name: matchAdaptedBy[1], birthYear: Number(matchAdaptedBy[2]), deathYear: matchAdaptedBy[3] === undefined ? null : Number(matchAdaptedBy[3])};                    
+                        currentSong.adaptedBy = {name: matchAdaptedBy[1], birthYear: Number(matchAdaptedBy[2]), deathYear: matchAdaptedBy[3] === undefined ? null : Number(matchAdaptedBy[3])};
                     }
                     else if (matchTranslatedBy) {
-                        currentSong.translatedBy = {name: matchTranslatedBy[1], birthYear: Number(matchTranslatedBy[2]), deathYear: matchTranslatedBy[3] === undefined ? null : Number(matchTranslatedBy[3])};                    
+                        currentSong.translatedBy = {name: matchTranslatedBy[1], birthYear: Number(matchTranslatedBy[2]), deathYear: matchTranslatedBy[3] === undefined ? null : Number(matchTranslatedBy[3])};
+                    }
+                    else if (matchVersifiedBy) {
+                        currentSong.versifiedBy = {name: matchVersifiedBy[1], birthYear: Number(matchVersifiedBy[2]), deathYear: matchVersifiedBy[3] === undefined ? null : Number(matchVersifiedBy[3])};
                     }
                     else if (currentSongLocation >= songLocations.afterFirstAuthor && line.length < 1 && isNonMajestySong) {
                         currentSongLocation = songLocations.afterHeader;
