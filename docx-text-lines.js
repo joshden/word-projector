@@ -1,21 +1,15 @@
-const fs = require('fs');
 const parseString = require('xml2js').parseString;
 const jszip = require('jszip');
 
 
-module.exports = function getDocxTextLines(filePath) {
+module.exports = function getDocxTextLines(filePath, data) {
     return new Promise((resolve, reject) => {
-        fs.readFile(filePath, function(err, data) {
-            if (err) {
-                reject(err);
-            }
-            jszip.loadAsync(data).then(zip => {
-                const file = zip.file('word/document.xml');
-                file.async('string').then(data => {
-                    processXml(filePath, data, resolve, reject);
-                });
+        jszip.loadAsync(data).then(zip => {
+            const file = zip.file('word/document.xml');
+            file.async('string').then(data => {
+                processXml(filePath, data, resolve, reject);
             });
-        });
+        }).catch(err => console.error(`Error loading docx data for ${filePath}`, err));
     });
 }
 
