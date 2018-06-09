@@ -1,4 +1,5 @@
 # word-projector
+
 Display song words on-screen for live events, like church services.
 
 It is a web-based app that provides presenter and presentation views for displaying the words.
@@ -43,6 +44,12 @@ node hymn-text-parser.js data/songs.docx > data/songs.json
 node hymn-text-parser.js 'data/files/Hymns/*.docx' > data/songs.json
 ```
 
+### Populate with all .docx files in `data/files/Hymns.zip`
+
+```bash
+node hymn-text-parser.js 'data/files/Hymns.zip' > data/songs.json
+```
+
 ## Running word-projector
 
 1. In the root directory (with this README), start the server:
@@ -53,7 +60,7 @@ node hymn-text-parser.js 'data/files/Hymns/*.docx' > data/songs.json
 
     e.g.
 
-    ``` 
+    ```
     Starting up http-server, serving ./
     Available on:
       http://192.168.8.22:8080
