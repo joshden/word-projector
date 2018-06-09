@@ -166,6 +166,7 @@ function handleDocxFile(path, data) {
                 const matchTranslatedBy = line.match(/^Translated by (.+?), (\d{4})\-(\d{4})?$/);
                 const matchVersifiedBy = line.match(/^Versified by (.+?), (\d{4})\-(\d{4})?$/);
                 const matchSource = line.match(/^Source: (.+)$/);
+                const matchAlteredBy = line.match(/^Altered by (.+?), (\d{4})\-(\d{4})?$/);
 
                 if (line.match(/[,;] tr. /i)) {
                     currentSongLocation = songLocations.afterFirstAuthor;
@@ -254,6 +255,9 @@ function handleDocxFile(path, data) {
                 }
                 else if (matchVersifiedBy) {
                     currentSong.versifiedBy = {name: matchVersifiedBy[1], birthYear: Number(matchVersifiedBy[2]), deathYear: matchVersifiedBy[3] === undefined ? null : Number(matchVersifiedBy[3])};
+                }
+                else if (matchAlteredBy) {
+                    currentSong.alteredBy = {name: matchAlteredBy[1], birthYear: Number(matchAlteredBy[2]), deathYear: matchAlteredBy[3] === undefined ? null : Number(matchAlteredBy[3])};
                 }
                 else if (currentSongLocation >= songLocations.afterFirstAuthor && line.length < 1 && isNonMajestySong) {
                     currentSongLocation = songLocations.afterHeader;
