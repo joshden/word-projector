@@ -1,0 +1,46 @@
+<style>
+    body {
+        color: white;
+        background-color: black;
+        margin: 0;
+        font-size: 6vw;
+    }
+    #container {
+        background-color: #333;
+        margin: auto;
+        overflow: hidden;
+    }
+</style>
+
+<div id="container">
+    <h1>The Title</h1>
+    <p>This is the first line of text</p>
+    <p>This is the next line of text that is a bit longer</p>
+</div>
+
+<script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+<script>
+    function scaleFrame() {
+        const widthByHeight = [16, 9];
+        const aspectRatio = widthByHeight[0] / widthByHeight[1];
+        
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        const $container = $('#container');
+
+        if (windowWidth > windowHeight * aspectRatio) {
+            const containerWidth = windowHeight * aspectRatio;
+            $container.css('height', windowHeight + 'px');
+            $container.css('width', containerWidth + 'px');
+            $container.css('font-size', (containerWidth / windowWidth * 100) + '%');
+        }
+        else {
+            $container.css('height', (windowWidth / aspectRatio) + 'px');
+            $container.css('width', windowWidth + 'px');
+            $container.css('font-size', '');
+        }
+    };
+    $(window).resize(scaleFrame);
+    scaleFrame();
+</script>
