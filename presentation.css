@@ -13,9 +13,8 @@ body {
     z-index: -1;
     display: none;
 }
-#presenter {
-    /* This will be dynamically scaled based on ratio of presenter to presentation width */
-    font-size: 100%;
+#presenter, #presentationFrame {
+    font-size: 5.213483vw;
 }
 #presenter article:not(.active) {
     opacity: 0.4;
@@ -27,23 +26,21 @@ body {
 #presenter.presentation-active article header.top-line:hover, #presenter.presentation-active article li.top-line:hover {
     text-decoration: line-through;
 }
-#presentation article {
+#presentationContents article {
     opacity: 0;
 }
-#presentation article.active {
+#presentationContents article.active {
     opacity: 1;
     transition: opacity 1s ease;
 }
 article {
     color: #eee;
-    font-size: calc(6.25em * 1920 / 1920); /* calc(6.25em * 1024 / 1920); */
-        /*  This allows having a consistent size with different resolutions:
-            baseSize * actualWidth / baseWidth
-                baseSize: font size for display of baseWidth pixels 
-                actualWidth: actual pixel width of display
-                baseWidth: pixel width relative to baseSize
-        */
     padding: 0.4em;
+}
+#presentationFrame {
+    background-color: rgb(0, 0, 0);
+    margin: auto;
+    overflow: hidden;
 }
 header {
     /* font-weight: bold; */
