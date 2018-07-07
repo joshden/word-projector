@@ -81,3 +81,6 @@ li:first-letter, article h1:first-letter, article h2:first-letter {
 li:empty {
     min-height: 0.8em;
 }
+body.forcedScrollbar {
+    min-height: 101vh;
+}
