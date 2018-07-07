@@ -104,6 +104,7 @@ $(function() {
                     $presenterFrame.removeClass('presentation-active');
                     $launchPresentation.text('Launch Presentation');
                     $currentSelection = null;
+                    $presenterContents.find('.' + topLineClass).removeClass(topLineClass);
                     setPresenterFontSizeAndLiveFramePosition();
                     unselectSong();
                 };
