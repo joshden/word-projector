@@ -5,7 +5,8 @@ $(function() {
     let $currentSelection = null;
     const $launchPresentation = $('#launchPresentation');
     const $liveFrame = $('#liveFrame');
-    const $presenter = $('#presenter');
+    const $presenterFrame = $('#presenterFrame');
+    const $presenterContents = $('#presenterContents');
     const activeClass = 'active';
     const activeArticle = 'article.' + activeClass;
     const topLineClass = 'top-line';
@@ -14,7 +15,7 @@ $(function() {
     let $presentationContents = $();
     let $presenterAndPresentation = $();
 
-    $(window).resize(setLiveFramePosition);
+    $(window).resize(setPresenterFontSizeAndLiveFramePosition);
 
     let presentationScrolledAmount = 0;
 
@@ -22,16 +23,18 @@ $(function() {
         return Number($obj.css(`border${side}Width`).slice(0, -2));
     }
 
-    function setLiveFramePosition() {
-        if ($currentSelection) {
-            $liveFrame.show();
+    function setPresenterFontSizeAndLiveFramePosition() {
+        const windowWidth = window.innerWidth;
+        const presenterWidth = $presenterFrame.width();
 
-            const presenterWidth = document.documentElement.clientWidth;
+        $presenterContents.css('font-size', (presenterWidth / windowWidth) + 'em');
+
+        if ($currentSelection) {
             const liveFrameHeight = presenterWidth / aspectRatio;
             $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
             $liveFrame.css('width', String(presenterWidth - borderWidth($liveFrame, 'Left') - borderWidth($liveFrame, 'Left')) + 'px');
-
             $liveFrame.css('top', $currentSelection.offset().top);
+            $liveFrame.show();
         }
         else {
             $liveFrame.hide();
@@ -54,9 +57,9 @@ $(function() {
 
     function loadPresentationFromPresenter() {
         $currentSelection = null;
-        setLiveFramePosition();
+        setPresenterFontSizeAndLiveFramePosition();
         $presentationContents.find('article').remove();
-        $presenter.find('article').clone().appendTo($presentationContents);
+        $presenterContents.find('article').clone().appendTo($presentationContents);
         $presentationHtml.find('title').text('');
     }
 
@@ -88,20 +91,20 @@ $(function() {
         }
         else {
             presentationScrolledAmount = 0;
-            popup = window.open('presentation.html', '_blank', 'height=300,width=700,scrollbars=no');
+            popup = window.open('presentation.html', '_blank', 'height=450,width=800,scrollbars=no');
             popup.onload = function() {
                 $presentationHtml = $(popup.document).find('html');
                 $presentationFrame = $presentationHtml.find('#presentationFrame');
                 $presentationContents = $presentationFrame.find('#presentationContents');
-                $presenterAndPresentation = $presenter.add($presentationContents);
+                $presenterAndPresentation = $presenterContents.add($presentationContents);
                 loadPresentationFromPresenter();
-                $presenter.addClass('presentation-active');
+                $presenterFrame.addClass('presentation-active');
                 popup.onunload = function() {
                     popup = null;
-                    $presenter.removeClass('presentation-active');
+                    $presenterFrame.removeClass('presentation-active');
                     $launchPresentation.text('Launch Presentation');
                     $currentSelection = null;
-                    setLiveFramePosition();
+                    setPresenterFontSizeAndLiveFramePosition();
                     unselectSong();
                 };
                 handlePresentationWindowResize();
@@ -111,7 +114,7 @@ $(function() {
         }
     });
 
-    $presenter.on('songs:change', (e, songs) => {
+    $presenterFrame.on('songs:change', (e, songs) => {
         function hymnalNumber(song) {
             return song.majestyNumber ? ` #${song.majestyNumber.toFixed()}` : '';
         }
@@ -193,10 +196,10 @@ $(function() {
         `).join('');
 
         //console.log(wordsHtml);
-        $presenter.html(wordsHtml);
+        $presenterContents.html(wordsHtml);
         loadPresentationFromPresenter();
 
-        $presenter.find('article header, article li').click(function() {
+        $presenterContents.find('article header, article li').click(function() {
             if (popup) {
                 $currentSelection = $(this);
                 let doAnimateScroll = true;
@@ -225,7 +228,7 @@ $(function() {
                         $presentationHtml.find('title').text($article.find('header').text());
                     }
                     
-                    setLiveFramePosition();
+                    setPresenterFontSizeAndLiveFramePosition();
                 }
                 $currentSelection.toggleClass(topLineClass);
                 

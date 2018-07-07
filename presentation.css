@@ -13,17 +13,17 @@ body {
     z-index: -1;
     display: none;
 }
-#presenter, #presentationFrame {
+#presenterFrame, #presentationFrame {
     font-size: 5.213483vw;
 }
-#presenter article:not(.active) {
+#presenterFrame article:not(.active) {
     opacity: 0.4;
 }
-#presenter.presentation-active article header:hover, #presenter.presentation-active article li:hover {
+#presenterFrame.presentation-active article header:hover, #presenterFrame.presentation-active article li:hover {
     cursor: pointer;
     text-decoration: underline dotted;
 }
-#presenter.presentation-active article header.top-line:hover, #presenter.presentation-active article li.top-line:hover {
+#presenterFrame.presentation-active article header.top-line:hover, #presenterFrame.presentation-active article li.top-line:hover {
     text-decoration: line-through;
 }
 #presentationContents article {
