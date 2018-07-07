@@ -48,7 +48,7 @@ $(function() {
     function updatePresentationScrolledAmount() {
         const $topLine = $presentationContents.find('.' + topLineClass);
         if ($topLine.length) {
-            presentationScrolledAmount += $topLine.offset().top;
+            presentationScrolledAmount = -$presentationContents.offset().top + $topLine.offset().top;
         }
         else {
             presentationScrolledAmount = 0;
@@ -203,6 +203,7 @@ $(function() {
             if (popup) {
                 $currentSelection = $(this);
                 let doAnimateScroll = true;
+                $presentationContents.stop(true);
                 
                 if ($currentSelection.hasClass(topLineClass)) {
                     unselectSong();
@@ -223,7 +224,6 @@ $(function() {
                     if (isSwitchingArticle) {
                         doAnimateScroll = false;
                         unselectSong();
-                        $presentationHtml.stop(true);
                         $presenterAndPresentation.find(articleSelector).addClass('active');
                         $presentationHtml.find('title').text($article.find('header').text());
                     }
