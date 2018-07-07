@@ -29,6 +29,12 @@ $(function() {
 
         $presenterContents.css('font-size', (presenterWidth / windowWidth) + 'em');
 
+        setLiveFramePosition();
+    }
+
+    function setLiveFramePosition() {
+        const presenterWidth = $presenterFrame.width();
+
         if ($currentSelection) {
             const liveFrameHeight = presenterWidth / aspectRatio;
             $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
@@ -105,7 +111,7 @@ $(function() {
                     $launchPresentation.text('Launch Presentation');
                     $currentSelection = null;
                     $presenterContents.find('.' + topLineClass).removeClass(topLineClass);
-                    setPresenterFontSizeAndLiveFramePosition();
+                    setLiveFramePosition();
                     unselectSong();
                 };
                 handlePresentationWindowResize();
@@ -229,7 +235,7 @@ $(function() {
                         $presentationHtml.find('title').text($article.find('header').text());
                     }
                     
-                    setPresenterFontSizeAndLiveFramePosition();
+                    setLiveFramePosition();
                 }
                 $currentSelection.toggleClass(topLineClass);
                 
