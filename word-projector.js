@@ -1,29 +1,46 @@
 $(function() {
+    const widthByHeight = [16, 9];
+    const aspectRatio = widthByHeight[0] / widthByHeight[1];
     let popup = null;
     let $currentSelection = null;
     const $launchPresentation = $('#launchPresentation');
     const $liveFrame = $('#liveFrame');
-    const $presenter = $('#presenter');
+    const $presenterFrame = $('#presenterFrame');
+    const $presenterContents = $('#presenterContents');
     const activeClass = 'active';
     const activeArticle = 'article.' + activeClass;
     const topLineClass = 'top-line';
     let $presentationHtml = $();
-    let $presentation = $();
+    let $presentationFrame = $();
+    let $presentationContents = $();
     let $presenterAndPresentation = $();
 
-    let popupWidth = 1920;
-    let popupHeight = 1080;
-    $(window).resize(syncPresenterFontSize);
-    syncPresenterFontSize();
+    $(window).resize(setPresenterFontSizeAndLiveFramePosition);
+
+    let presentationScrolledAmount = 0;
 
     function borderWidth($obj, side) {
         return Number($obj.css(`border${side}Width`).slice(0, -2));
     }
 
+    function setPresenterFontSizeAndLiveFramePosition() {
+        const windowWidth = window.innerWidth;
+        const presenterWidth = $presenterFrame.width();
+
+        $presenterContents.css('font-size', (presenterWidth / windowWidth) + 'em');
+
+        setLiveFramePosition();
+    }
+
     function setLiveFramePosition() {
+        const presenterWidth = $presenterFrame.width();
+
         if ($currentSelection) {
-            $liveFrame.show();
+            const liveFrameHeight = presenterWidth / aspectRatio;
+            $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
+            $liveFrame.css('width', String(presenterWidth - borderWidth($liveFrame, 'Left') - borderWidth($liveFrame, 'Left')) + 'px');
             $liveFrame.css('top', $currentSelection.offset().top);
+            $liveFrame.show();
         }
         else {
             $liveFrame.hide();
@@ -34,29 +51,43 @@ $(function() {
         $presenterAndPresentation.find(activeArticle).removeClass(activeClass);
     }
 
+    function updatePresentationScrolledAmount() {
+        const $topLine = $presentationContents.find('.' + topLineClass);
+        if ($topLine.length) {
+            presentationScrolledAmount = -$presentationContents.offset().top + $topLine.offset().top;
+        }
+        else {
+            presentationScrolledAmount = 0;
+        }
+    }
+
     function loadPresentationFromPresenter() {
         $currentSelection = null;
-        setLiveFramePosition();
-        $presentation.find('article').remove();
-        $presenter.find('article').clone().appendTo($presentation);
+        setPresenterFontSizeAndLiveFramePosition();
+        $presentationContents.find('article').remove();
+        $presenterContents.find('article').clone().appendTo($presentationContents);
         $presentationHtml.find('title').text('');
     }
 
-    function syncPresenterFontSize() {
-        if (popup) {
-            popupWidth = popup.document.documentElement.clientWidth;
-            popupHeight = popup.document.documentElement.clientHeight;
-        }
-        const presenterWidth = document.documentElement.clientWidth;
-        const presenterPercentage = String(presenterWidth / popupWidth * 100) + '%';
-        $presenter.css('font-size', presenterPercentage);
+    function handlePresentationWindowResize() {
+        const popupWidth = popup.document.documentElement.clientWidth;
+        const popupHeight = popup.document.documentElement.clientHeight;
 
-        const liveFrameHeight = presenterWidth / popupWidth * popupHeight;
-        $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
-        $liveFrame.css('width', String(presenterWidth - borderWidth($liveFrame, 'Left') - borderWidth($liveFrame, 'Left')) + 'px');
-        
-        //console.log('presenterWidth', presenterWidth);
-        setLiveFramePosition();
+        if (popupWidth > popupHeight * aspectRatio) {
+            const scaledFrameWidth = popupHeight * aspectRatio;
+            $presentationFrame.css('width', scaledFrameWidth + 'px');
+            $presentationFrame.css('height', popupHeight + 'px');
+            $presentationContents.css('font-size', (scaledFrameWidth / popupWidth) + 'em');
+        }
+
+        else {
+            $presentationFrame.css('width', '');
+            $presentationFrame.css('height', (popupWidth / aspectRatio) + 'px');
+            $presentationContents.css('font-size', '');
+        }
+
+        updatePresentationScrolledAmount();
+        $presentationContents.css('margin-top', -presentationScrolledAmount);
     }
 
     $launchPresentation.click(function() {
@@ -64,29 +95,32 @@ $(function() {
             popup.close();
         }
         else {
-            popup = window.open('presentation.html', '_blank', 'height=300,width=700,scrollbars=no');
+            presentationScrolledAmount = 0;
+            popup = window.open('presentation.html', '_blank', 'height=450,width=800,scrollbars=no');
             popup.onload = function() {
                 $presentationHtml = $(popup.document).find('html');
-                $presentation = $presentationHtml.find('body#presentation');
-                $presenterAndPresentation = $presenter.add($presentation);
+                $presentationFrame = $presentationHtml.find('#presentationFrame');
+                $presentationContents = $presentationFrame.find('#presentationContents');
+                $presenterAndPresentation = $presenterContents.add($presentationContents);
                 loadPresentationFromPresenter();
-                $presenter.addClass('presentation-active');
+                $presenterFrame.addClass('presentation-active');
                 popup.onunload = function() {
                     popup = null;
-                    $presenter.removeClass('presentation-active');
+                    $presenterFrame.removeClass('presentation-active');
                     $launchPresentation.text('Launch Presentation');
                     $currentSelection = null;
+                    $presenterContents.find('.' + topLineClass).removeClass(topLineClass);
                     setLiveFramePosition();
                     unselectSong();
                 };
-                syncPresenterFontSize();
+                handlePresentationWindowResize();
             };
-            $(popup).resize(syncPresenterFontSize);
+            $(popup).resize(handlePresentationWindowResize);
             $launchPresentation.text('Close Presentation');
         }
     });
 
-    $presenter.on('songs:change', (e, songs) => {
+    $presenterFrame.on('songs:change', (e, songs) => {
         function hymnalNumber(song) {
             return song.majestyNumber ? ` #${song.majestyNumber.toFixed()}` : '';
         }
@@ -168,12 +202,14 @@ $(function() {
         `).join('');
 
         //console.log(wordsHtml);
-        $presenter.html(wordsHtml);
+        $presenterContents.html(wordsHtml);
         loadPresentationFromPresenter();
 
-        $presenter.find('article header, article li').click(function() {
+        $presenterContents.find('article header, article li').click(function() {
             if (popup) {
                 $currentSelection = $(this);
+                let doAnimateScroll = true;
+                $presentationContents.stop(true);
                 
                 if ($currentSelection.hasClass(topLineClass)) {
                     unselectSong();
@@ -189,25 +225,28 @@ $(function() {
                         $currentSelection.is('header') ? '' 
                         : `> ol:nth-of-type(${$currentSelection.parent().prevAll('ol').length + 1}) > li:nth-of-type(${$currentSelection.prevAll('li').length + 1})`);
                     
-                    const popupScrollTop = $presentation.find(scrollToSelector).offset().top;
-    
+                    $presentationContents.find(scrollToSelector).addClass(topLineClass);
+                    
                     if (isSwitchingArticle) {
+                        doAnimateScroll = false;
                         unselectSong();
-                        $presentationHtml.stop(true);
-                        $presentationHtml.scrollTop(popupScrollTop);
                         $presenterAndPresentation.find(articleSelector).addClass('active');
                         $presentationHtml.find('title').text($article.find('header').text());
-                    }
-    
-                    else {
-                        $presentationHtml.animate({
-                            scrollTop: popupScrollTop
-                        }, 1000);
                     }
                     
                     setLiveFramePosition();
                 }
                 $currentSelection.toggleClass(topLineClass);
+                
+                updatePresentationScrolledAmount();
+                if (doAnimateScroll) {
+                    $presentationContents.animate({
+                        marginTop: -presentationScrolledAmount
+                    }, 1000);
+                }
+                else {
+                    $presentationContents.css('margin-top', -presentationScrolledAmount);
+                }
             }
         });
     });
