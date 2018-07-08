@@ -38,9 +38,16 @@ article {
     padding: 0.4em;
 }
 #presentationFrame {
-    background-color: rgb(0, 0, 0);
+    position: relative;
     margin: auto;
     overflow: hidden;
+}
+#presentationBottomFade {
+    position: absolute;
+    bottom: 0;
+    height: 0.4em;
+    width: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0),rgba(0,0,0,1));
 }
 header {
     /* font-weight: bold; */

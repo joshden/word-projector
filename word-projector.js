@@ -13,6 +13,7 @@ $(function() {
     let $presentationHtml = $();
     let $presentationFrame = $();
     let $presentationContents = $();
+    let $presentationBottomFade = $();
     let $presenterAndPresentation = $();
 
     $(window).resize(setPresenterFontSizeAndLiveFramePosition);
@@ -77,13 +78,13 @@ $(function() {
             const scaledFrameWidth = popupHeight * aspectRatio;
             $presentationFrame.css('width', scaledFrameWidth + 'px');
             $presentationFrame.css('height', popupHeight + 'px');
-            $presentationContents.css('font-size', (scaledFrameWidth / popupWidth) + 'em');
+            $presentationContents.add($presentationBottomFade).css('font-size', (scaledFrameWidth / popupWidth) + 'em');
         }
 
         else {
             $presentationFrame.css('width', '');
             $presentationFrame.css('height', (popupWidth / aspectRatio) + 'px');
-            $presentationContents.css('font-size', '');
+            $presentationContents.add($presentationBottomFade).css('font-size', '');
         }
 
         updatePresentationScrolledAmount();
@@ -101,6 +102,7 @@ $(function() {
                 $presentationHtml = $(popup.document).find('html');
                 $presentationFrame = $presentationHtml.find('#presentationFrame');
                 $presentationContents = $presentationFrame.find('#presentationContents');
+                $presentationBottomFade = $presentationFrame.find('#presentationBottomFade');
                 $presenterAndPresentation = $presenterContents.add($presentationContents);
                 loadPresentationFromPresenter();
                 $presenterFrame.addClass('presentation-active');
