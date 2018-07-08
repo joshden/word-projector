@@ -70,9 +70,8 @@ $(function() {
     }
 
     function handlePresentationWindowResize() {
-        const popupWidth = popup.document.documentElement.clientWidth; // popup.innerWidth;
-        const popupHeight = popup.document.documentElement.clientHeight; // popup.innerHeight;
-        console.log('popupWidth', popupWidth, 'popupHeight', popupHeight);
+        const popupWidth = popup.document.documentElement.clientWidth;
+        const popupHeight = popup.document.documentElement.clientHeight;
 
         if (popupWidth > popupHeight * aspectRatio) {
             const scaledFrameWidth = popupHeight * aspectRatio;
