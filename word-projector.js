@@ -62,11 +62,14 @@ $(function() {
         }
     }
 
-    function loadPresentationFromPresenter() {
+    let plannedSongs = [];
+
+    function loadPresentationSongs(plannedSongs) {
+        const songsHtml = getSongsHtml(plannedSongs);
         $currentSelection = null;
         setPresenterFontSizeAndLiveFramePosition();
         $presentationContents.find('article').remove();
-        $presenterContents.find('article').clone().appendTo($presentationContents);
+        $presentationContents.append(songsHtml)
         $presentationHtml.find('title').text('');
     }
 
@@ -104,7 +107,7 @@ $(function() {
                 $presentationContents = $presentationFrame.find('#presentationContents');
                 $presentationBottomFade = $presentationFrame.find('#presentationBottomFade');
                 $presenterAndPresentation = $presenterContents.add($presentationContents);
-                loadPresentationFromPresenter();
+                loadPresentationSongs(plannedSongs);
                 $presenterFrame.addClass('presentation-active');
                 popup.onunload = function() {
                     popup = null;
@@ -122,7 +125,7 @@ $(function() {
         }
     });
 
-    $presenterFrame.on('songs:change', (e, songs) => {
+    function getSongsHtml(songs) {
         function hymnalNumber(song) {
             return song.majestyNumber ? ` #${song.majestyNumber.toFixed()}` : '';
         }
@@ -193,7 +196,7 @@ $(function() {
                 return escaped;
             }
         }
-        const wordsHtml = songs.map(song => `
+        const songsHtml = songs.map(song => `
             <article>
                 <header>
                     <h1>${escape(song.title)}${hymnalNumber(song)}</h1>
@@ -203,9 +206,18 @@ $(function() {
             </article>
         `).join('');
 
-        //console.log(wordsHtml);
-        $presenterContents.html(wordsHtml);
-        loadPresentationFromPresenter();
+        return songsHtml;
+    }
+
+    $presenterFrame.on('songs:change', (e, songs) => {
+        plannedSongs = songs;
+        loadPresentationSongs(plannedSongs);
+    });
+
+    $presenterFrame.on('songs:change', (e, songs) => {
+        const songsHtml = getSongsHtml(songs);
+        //console.log(songsHtml);
+        $presenterContents.html(songsHtml);
 
         $presenterContents.find('article header, article li').click(function() {
             if (popup) {
