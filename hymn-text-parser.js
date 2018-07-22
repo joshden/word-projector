@@ -137,7 +137,7 @@ function handleDocxFile(path, data) {
                     currentSongLocation = songLocations.afterHeader;
                 }
                 else {
-                    const match = line.trim().match(/^(.+?) -(\w.+)$/);
+                    const match = line.trim().match(/^(.+?) [–-](\w.+)$/);
                     if (match) {
                         currentSong.majestyScripture = {reference: match[2], text: match[1]};
                     }
@@ -155,6 +155,7 @@ function handleDocxFile(path, data) {
                 const matchAuthorOptionalYears = line.match(/^By ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
                 const matchAuthorAndCentury = line.match(/^By ([^,]+), (18|19|20)th century$/);
                 const matchAuthorNameWithComma = line.match(/^By (.+?), (\d{4})\-(\d{4})$/);
+                const matchAuthorNameWithCommaCirca = line.match(/^By (.+?), c. (\d{4})\-(\d{4})$/);
                 const matchAuthorBornYear = line.match(/^By (.+?), b\. (\d{4})$/);
                 const matchByWithEndingYear = line.match(/^By (.+?), (\d{4})$/);
                 const matchBasedOn = line.match(/^Based on (.+), (\d{4})$/);
@@ -202,6 +203,12 @@ function handleDocxFile(path, data) {
                     const birthYear = Number(matchAuthorNameWithComma[2]);
                     const deathYear = Number(matchAuthorNameWithComma[3]);
                     author = {name: matchAuthorNameWithComma[1], birthYear: birthYear, deathYear: deathYear};
+                    currentSongLocation = songLocations.afterFirstAuthor;
+                }
+                else if (matchAuthorNameWithCommaCirca) {
+                    const birthYear = Number(matchAuthorNameWithCommaCirca[2]);
+                    const deathYear = Number(matchAuthorNameWithCommaCirca[3]);
+                    author = {name: matchAuthorNameWithCommaCirca[1], birthYear: birthYear, deathYear: deathYear, circaYears: true};
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchAuthorBornYear) {
