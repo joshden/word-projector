@@ -164,7 +164,7 @@ function handleDocxFile(path, data) {
                 const matchTune = line.match(/^Tune: (.+)$/);
                 const matchArrangedBy = line.match(/^Arr\. (.+?), (\d{4})\-(\d{4})?$/);
                 const matchAdaptedBy = line.match(/^Adapted by (.+?), (\d{4})\-(\d{4})?$/);
-                const matchTranslatedBy = line.match(/^Translated by (.+?), (\d{4})\-(\d{4})?$/);
+                const matchTranslatedBy = line.match(/^Translated by (.+?), (\d{4})\-(\d{4})?( and others)?$/);
                 const matchVersifiedBy = line.match(/^Versified by (.+?), (\d{4})\-(\d{4})?$/);
                 const matchSource = line.match(/^Source: (.+)$/);
                 const matchAlteredBy = line.match(/^Altered by (.+?), (\d{4})\-(\d{4})?$/);
@@ -185,7 +185,7 @@ function handleDocxFile(path, data) {
                     currentSongLocation = songLocations.afterFirstAuthor;
                     songWarning(`Expected multiple authors on separate lines, but found: ${line}`);
                 }
-                else if (line.match(/\d{4}[^-]/)) {
+                else if (line.trim().replace(/ and others$/, '').match(/\d{4}[^-]/)) {
                     currentSongLocation = songLocations.afterFirstAuthor;
                     songWarning(`Expected only one year or year range on an author line, but found: ${line}`);
                 }
@@ -258,7 +258,12 @@ function handleDocxFile(path, data) {
                     currentSong.adaptedBy = {name: matchAdaptedBy[1], birthYear: Number(matchAdaptedBy[2]), deathYear: matchAdaptedBy[3] === undefined ? null : Number(matchAdaptedBy[3])};
                 }
                 else if (matchTranslatedBy) {
-                    currentSong.translatedBy = {name: matchTranslatedBy[1], birthYear: Number(matchTranslatedBy[2]), deathYear: matchTranslatedBy[3] === undefined ? null : Number(matchTranslatedBy[3])};
+                    currentSong.translatedBy = {
+                        name: matchTranslatedBy[1], 
+                        birthYear: Number(matchTranslatedBy[2]), 
+                        deathYear: matchTranslatedBy[3] === undefined ? null : Number(matchTranslatedBy[3]),
+                        andOthers: matchTranslatedBy[4] === ' and others'
+                    };
                 }
                 else if (matchVersifiedBy) {
                     currentSong.versifiedBy = {name: matchVersifiedBy[1], birthYear: Number(matchVersifiedBy[2]), deathYear: matchVersifiedBy[3] === undefined ? null : Number(matchVersifiedBy[3])};
