@@ -153,8 +153,8 @@ function handleDocxFile(path, data) {
                 let author = null;
 
                 const matchAuthorOptionalYears = line.match(/^By ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
-                const matchAuthorAndCentury = line.match(/^By ([^,]+), (18|19|20)th century$/);
-                const matchAuthorNameWithComma = line.match(/^By (.+?), (\d{4})\-(\d{4})$/);
+                const matchAuthorAndCentury = line.match(/^By ([^,]+), (18|19|20)th [cC]entury$/);
+                const matchAuthorNameWithComma = line.match(/^By (.+?), (\d{4})\-(\d{4})( \(and others\))?$/);
                 const matchAuthorNameWithCommaCirca = line.match(/^By (.+?), c. (\d{4})\-(\d{4})$/);
                 const matchAuthorBornYear = line.match(/^By (.+?), b\. (\d{4})$/);
                 const matchByWithEndingYear = line.match(/^By (.+?), (\d{4})$/);
@@ -185,7 +185,7 @@ function handleDocxFile(path, data) {
                     currentSongLocation = songLocations.afterFirstAuthor;
                     songWarning(`Expected multiple authors on separate lines, but found: ${line}`);
                 }
-                else if (line.trim().replace(/ and others$/, '').match(/\d{4}[^-]/)) {
+                else if (line.trim().replace(/ \(?and others\)?$/, '').match(/\d{4}[^-]/)) {
                     currentSongLocation = songLocations.afterFirstAuthor;
                     songWarning(`Expected only one year or year range on an author line, but found: ${line}`);
                 }
@@ -202,7 +202,12 @@ function handleDocxFile(path, data) {
                 else if (matchAuthorNameWithComma) {
                     const birthYear = Number(matchAuthorNameWithComma[2]);
                     const deathYear = Number(matchAuthorNameWithComma[3]);
-                    author = {name: matchAuthorNameWithComma[1], birthYear: birthYear, deathYear: deathYear};
+                    author = {
+                        name: matchAuthorNameWithComma[1],
+                        birthYear: birthYear,
+                        deathYear: deathYear,
+                        andOthers: matchAuthorNameWithComma[4] === ' (and others)'
+                    };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchAuthorNameWithCommaCirca) {
