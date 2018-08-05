@@ -13,7 +13,7 @@ $.get('data/songs.json', allSongs => {
                 .map(id => parseInt(id, 10))
                 .map(id => allSongs.find(song => song.id === id));
 
-            $('#presenterFrame').trigger('songs:change', [selectedSongs]);
+            $('#presenterFrame').trigger('songs:change', [selectedSongs]); // TODO WebSocket.send
         },
 
         openOnFocus: false,
