@@ -120,6 +120,7 @@ $(function() {
                     unselectSong();
                 };
                 handlePresentationWindowResize();
+                socket.emit('songLine:ready');
             };
             $(popup).resize(handlePresentationWindowResize);
             $launchPresentation.text('Close Presentation');
@@ -210,12 +211,12 @@ $(function() {
         return songsHtml;
     }
 
-    $presenterFrame.on('songs:change', (e, songs) => { // TODO WebSocket.onmessage
+    $presenterFrame.on('songs:change', (e, songs) => {
         plannedSongs = songs;
         loadPresentationSongs(plannedSongs);
     });
 
-    $presenterFrame.on('songs:change', (e, songs) => { // TODO WebSocket.onmessage
+    $presenterFrame.on('songs:change', (e, songs) => {
         const songsHtml = getSongsHtml(songs);
         $presenterContents.html(songsHtml);
 
@@ -230,12 +231,12 @@ $(function() {
                 const line = isHeader ? null : $clickedLine.prevAll('li').length;
                 const shouldUnselect = $clickedLine.hasClass(topLineClass);
 
-                $presenterFrame.trigger(`songLine:${shouldUnselect?'un':''}select`, [song, stanza, line]); // TODO WebSocket.send
+                socket.emit(`songLine:${shouldUnselect?'un':''}select`, song, stanza, line);
             }
         });
     });
 
-    $presenterFrame.on('songLine:select', (e, song, stanza, line) => { // TODO WebSocket.onmessage
+    socket.on('songLine:select', (song, stanza, line) => {
         const { articleSelector, isSwitchingArticle, scrollToSelector } = setCurrentSelectionAndStopAnimationAndGetInfo(song, stanza, line);
         $presenterAndPresentation.find('.' + topLineClass).removeClass(topLineClass);
         $presentationContents.find(scrollToSelector).addClass(topLineClass);
@@ -249,7 +250,7 @@ $(function() {
         selectLineAndAnimate(!isSwitchingArticle);
     });
 
-    $presenterFrame.on('songLine:unselect', (e, song, stanza, line) => { // TODO WebSocket.onmessage
+    socket.on('songLine:unselect', (song, stanza, line) => {
         setCurrentSelectionAndStopAnimationAndGetInfo(song, stanza, line);
         unselectSong();
         selectLineAndAnimate(true);
