@@ -100,7 +100,8 @@ $(function() {
         }
         else {
             presentationScrolledAmount = 0;
-            popup = window.open('presentation.html', '_blank', 'height=450,width=800,scrollbars=no');
+            const initialWidth = 800;
+            popup = window.open('presentation.html', '_blank', `height=${initialWidth/aspectRatio},width=${initialWidth},scrollbars=no`);
             popup.onload = function() {
                 $presentationHtml = $(popup.document).find('html');
                 $presentationFrame = $presentationHtml.find('#presentationFrame');
