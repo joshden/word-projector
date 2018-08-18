@@ -157,6 +157,7 @@ function handleDocxFile(path, data) {
                 const matchAuthorNameWithComma = line.match(/^By (.+?), (\d{4})\-(\d{4})( \(and others\))?$/);
                 const matchAuthorNameWithCommaCirca = line.match(/^By (.+?), c. (\d{4})\-(\d{4})$/);
                 const matchAuthorBornYear = line.match(/^By (.+?), b\. (\d{4})$/);
+                const matchAuthorDeathYear = line.match(/^By (.+?), \?-(\d{4})$/);
                 const matchByWithEndingYear = line.match(/^By (.+?), (\d{4})$/);
                 const matchBasedOn = line.match(/^Based on (.+), (\d{4})$/);
                 const matchScripture = line.match(/^Scripture: (.+)$/);
@@ -219,6 +220,11 @@ function handleDocxFile(path, data) {
                 else if (matchAuthorBornYear) {
                     const birthYear = Number(matchAuthorBornYear[2]);
                     author = {name: matchAuthorBornYear[1], birthYear: birthYear };
+                    currentSongLocation = songLocations.afterFirstAuthor;
+                }
+                else if (matchAuthorDeathYear) {
+                    const deathYear = Number(matchAuthorDeathYear[2]);
+                    author = { name: matchAuthorDeathYear[1], deathYear: deathYear };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchStanza) {
