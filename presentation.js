@@ -1,8 +1,12 @@
 $(function() {
 
-    $('#makePresentationFullscreen').click(function() {
-        $(this).hide();
-        //screenfull.request($('article')[0]);
+    const $fullscreen = $('#makePresentationFullscreen');
+
+    $fullscreen.find('button').click(function() {
+        $fullscreen.hide();
+    });
+
+    $fullscreen.find('button.makeFullscreen').click(function() {
         screenfull.request();
     });
 
