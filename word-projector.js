@@ -14,7 +14,7 @@ $(function() {
     let $presentationFrame = $();
     let $presentationContents = $();
     let $presentationBottomFade = $();
-    let $presenterAndPresentation = $();
+    let $presenterAndPresentation = $presenterContents;
 
     $(window).resize(setPresenterFontSizeAndLiveFramePosition);
 
@@ -250,6 +250,7 @@ $(function() {
     socket.on('songLine:unselect', (song, stanza, line) => {
         setCurrentSelectionAndStopAnimationAndGetInfo(song, stanza, line);
         unselectSong();
+        setLiveFramePosition();
         selectLineAndAnimate(true);
     });
 

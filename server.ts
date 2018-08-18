@@ -17,6 +17,7 @@ io.on('connection', client => {
     console.log(`client ${client.id} connected`);
 
     client.on('songs:ready', () => {
+        console.log('received songs:ready');
         client.emit('songs:change', currentSongIds);
         sendSongLine();
     });
