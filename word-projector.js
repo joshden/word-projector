@@ -114,12 +114,9 @@ $(function() {
                     popup = null;
                     $presenterFrame.removeClass('presentation-active');
                     $launchPresentation.text('Launch Presentation');
-                    $currentSelection = null;
-                    $presenterContents.find('.' + topLineClass).removeClass(topLineClass);
-                    setLiveFramePosition();
-                    unselectSong();
                 };
                 handlePresentationWindowResize();
+                unselectSong();
                 socket.emit('songLine:ready');
             };
             $(popup).resize(handlePresentationWindowResize);
