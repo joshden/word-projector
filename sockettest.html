@@ -27,6 +27,8 @@
         #histogram {
             margin: 0.5em 0 0.5em 0;
             padding: 0;
+            border: 4px #eee solid;
+            background-color: #eee;
         }
         #histogram li {
             margin: 0;
@@ -56,53 +58,56 @@
         const entries = [];
         let stopTest = true;
 
-        socket.on('songs:change', ids => {
-            const millis = new Date().getTime() - startTime.getTime();
-            total += millis;
-            count++;
-            min = Math.min(millis, min);
-            max = Math.max(millis, max);
-            entries.push(millis);
-            const binCount = Math.min(entries.length, maxBinCount);
-            const binSize = max / binCount;
-            const bins = [];
-            for (let i=0; i<binCount; i++) {
-                bins[i] = 0;
-            }
-            entries.forEach(millis => {
-                const bin = Math.min(Math.floor(millis / binSize), binCount - 1);
-                bins[bin]++;
+        $.get('data/songs.json', allSongs => {
+            const randomIds = _.times(3, () => Math.floor(Math.random() * allSongs.length));
+            socket.on('songs:change', ids => {
+                if (! stopTest && _.isEqual(ids, randomIds)) {
+                    const millis = new Date().getTime() - startTime.getTime();
+                    total += millis;
+                    count++;
+                    min = Math.min(millis, min);
+                    max = Math.max(millis, max);
+                    entries.push(millis);
+                    const binCount = Math.min(entries.length, maxBinCount);
+                    const binSize = max / binCount;
+                    const bins = [];
+                    for (let i=0; i<binCount; i++) {
+                        bins[i] = 0;
+                    }
+                    entries.forEach(millis => {
+                        const bin = Math.min(Math.floor(millis / binSize), binCount - 1);
+                        bins[bin]++;
+                    });
+                    const maxCount = Math.max(...bins);
+
+                    $('#average').text(Math.round(total / count));
+                    $('#min').text(min);
+                    $('#max').text(max);
+                    $histogram.empty();
+                    bins.forEach((count, i) => {
+                        $histogram.append(`<li style="width:${count/maxCount*100}%">${Math.floor(i * binSize)}-${Math.floor((i+1) * binSize)} (${count})</li>`);
+                    });
+                    setTimeout(runTest, 2000);
+                }
             });
-            const maxCount = Math.max(...bins);
 
-            $('#average').text(Math.round(total / count));
-            $('#min').text(min);
-            $('#max').text(max);
-            $histogram.empty();
-            bins.forEach((count, i) => {
-                $histogram.append(`<li style="width:${Math.max(count/maxCount*100, 0.5)}%">${Math.floor(i * binSize)}-${Math.floor((i+1) * binSize)} (${count})</li>`);
+            function runTest() {
+                startTime = new Date();
+                socket.emit('songs:change', randomIds);
+            }
+
+            const start = 'Start ▶️';
+            $button.text(start).click(() => {
+                if ($button.text() === start) {
+                    $button.text('Pause ⏸️');
+                    stopTest = false;
+                    runTest();
+                }
+                else {
+                    $button.text(start);
+                    stopTest = true;
+                }
             });
-            if (! stopTest) {
-                setTimeout(runTest, 2000);
-            }
-        });
-
-        function runTest() {
-            startTime = new Date();
-            socket.emit('songs:change', [1, 17, 100]);
-        }
-
-        const start = 'Start';
-        $button.text(start).click(() => {
-            if ($button.text() === start) {
-                $button.text('Pause');
-                stopTest = false;
-                runTest();
-            }
-            else {
-                $button.text(start);
-                stopTest = true;
-            }
         });
     </script>
 </body>
