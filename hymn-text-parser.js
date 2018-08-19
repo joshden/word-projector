@@ -333,6 +333,12 @@ function handleDocxFile(path, data) {
                         currentSongLocation = songLocations.before;
                     }
                     else {
+                        if (line.includes('©') || line.toLowerCase().includes('copyright')) {
+                            songWarning(`Invalid copyright line: ${line.trim()}`);
+                        }
+                        else if (line.match(/\d/) && ! isScriptureSong) {
+                            songWarning(`Potentially invalid verse number: ${line.trim()}`);
+                        }
                         currentStanza.lines.push(line);
                     }
                 }
@@ -342,19 +348,52 @@ function handleDocxFile(path, data) {
 }
 
 function cleanAndOutputSongs() {
+    const majestyNumberCounts = new Map();
     songs.forEach(song => {
+        const majestyNumber = song.majestyNumber;
+        if (majestyNumber !== undefined) {
+            if (! majestyNumberCounts.has(majestyNumber)) {
+                majestyNumberCounts.set(majestyNumber, 0);
+            }
+            majestyNumberCounts.set(majestyNumber, majestyNumberCounts.get(majestyNumber) + 1);
+        }
         song.stanzas.forEach(stanza => {
             const lines = stanza.lines;
             while (lines.length > 0 && lines[lines.length-1].length < 1) {
                 lines.pop();
             }
+
+            let stanzaExtraBlankLines = false;
+            let wasLineMinus1Blank = false;
+            let wasLineMinus2Blank = false;
+
+            lines.forEach(line => {
+                const isThisLineBlank = line.trim().length === 0;
+                if (isThisLineBlank && (wasLineMinus1Blank || wasLineMinus2Blank)) {
+                    stanzaExtraBlankLines = true;
+                }
+                wasLineMinus2Blank = wasLineMinus1Blank;
+                wasLineMinus1Blank = isThisLineBlank;
+            });
+
+            if (stanzaExtraBlankLines) {
+                errors.push({ message: 'Possibly extra blank lines found', majestyNumber: song.majestyNumber, title: song.title, majestyVerse: stanza.majestyVerse, lines, warning: true });
+            }
         });
+    });
+
+    majestyNumberCounts.forEach((count, majestyNumber) => {
+        if (count > 1) {
+            errors.push(`${count} songs had majesty number #${majestyNumber}`);
+        }
     });
 
     if (errors./*filter(e => !e.warning).*/length) {
         process.exitCode = 1;
+        console.error(errors.length, 'errors');
         errors.forEach(error => {
             console.error(error);
+            console.error();
         });
     }
     else {
