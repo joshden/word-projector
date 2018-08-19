@@ -1,0 +1,109 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+
+    <title>Word Projector</title>
+
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        socket = io.connect();
+    </script>
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="node_modules/screenfull/dist/screenfull.js"></script>
+    <script type="text/javascript" src="node_modules/lodash/lodash.min.js"></script>
+    <script type="text/javascript" src="node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="node_modules/selectize/dist/js/standalone/selectize.min.js"></script>
+    <link rel="stylesheet" href="node_modules/purecss/build/pure-min.css">
+    <link rel="stylesheet" href="node_modules/purecss/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="node_modules/selectize/dist/css/selectize.default.css">
+    <!-- <link rel="stylesheet" href="presentation.css"> -->
+    <style>
+        body {
+            color: black;
+            font-size: 4em;
+        }
+        #histogram {
+            margin: 0.5em 0 0.5em 0;
+            padding: 0;
+        }
+        #histogram li {
+            margin: 0;
+            padding: 0;
+            background-color: #00CC0055;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div>Min: <span id="min"></span> ms</div>
+    <div>Avg: <span id="average"></span> ms</div>
+    <div>Max: <span id="max"></span> ms</div>
+    <button class="pure-button"></button>
+    <ul id="histogram"></ul>
+
+    <script>
+        const $histogram = $('#histogram');
+        const $button = $('button');
+        const maxBinCount = 16;
+        let total = 0;
+        let count = 0;
+        let min = 5000;
+        let max = 0;
+        let startTime = null;
+        const entries = [];
+        let stopTest = true;
+
+        socket.on('songs:change', ids => {
+            const millis = new Date().getTime() - startTime.getTime();
+            total += millis;
+            count++;
+            min = Math.min(millis, min);
+            max = Math.max(millis, max);
+            entries.push(millis);
+            const binCount = Math.min(entries.length, maxBinCount);
+            const binSize = max / binCount;
+            const bins = [];
+            for (let i=0; i<binCount; i++) {
+                bins[i] = 0;
+            }
+            entries.forEach(millis => {
+                const bin = Math.min(Math.floor(millis / binSize), binCount - 1);
+                bins[bin]++;
+            });
+            const maxCount = Math.max(...bins);
+
+            $('#average').text(Math.round(total / count));
+            $('#min').text(min);
+            $('#max').text(max);
+            $histogram.empty();
+            bins.forEach((count, i) => {
+                $histogram.append(`<li style="width:${Math.max(count/maxCount*100, 0.5)}%">${Math.floor(i * binSize)}-${Math.floor((i+1) * binSize)} (${count})</li>`);
+            });
+            if (! stopTest) {
+                setTimeout(runTest, 2000);
+            }
+        });
+
+        function runTest() {
+            startTime = new Date();
+            socket.emit('songs:change', [1, 17, 100]);
+        }
+
+        const start = 'Start';
+        $button.text(start).click(() => {
+            if ($button.text() === start) {
+                $button.text('Pause');
+                stopTest = false;
+                runTest();
+            }
+            else {
+                $button.text(start);
+                stopTest = true;
+            }
+        });
+    </script>
+</body>
+</html>
