@@ -70,7 +70,6 @@ $(function() {
         setPresenterFontSizeAndLiveFramePosition();
         $presentationContents.find('article').remove();
         $presentationContents.append(songsHtml)
-        $presentationHtml.find('title').text('');
     }
 
     function handlePresentationWindowResize() {
@@ -241,7 +240,6 @@ $(function() {
             doAnimateScroll = false;
             unselectSong();
             $presenterAndPresentation.find(articleSelector).addClass('active');
-            $presentationHtml.find('title').text($presentationContents.find(articleSelector).find('header').text());
         }
         setLiveFramePosition();
         selectLineAndAnimate(!isSwitchingArticle);
