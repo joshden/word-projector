@@ -90,7 +90,7 @@ $(function() {
         }
 
         updatePresentationScrolledAmount();
-        $presentationContents.css('margin-top', -presentationScrolledAmount);
+        $presentationContents.css('transform', `translateY(${-presentationScrolledAmount}px)`);
     }
 
     $launchPresentation.click(function() {
@@ -268,13 +268,13 @@ $(function() {
         $currentSelection.toggleClass(topLineClass);
     
         updatePresentationScrolledAmount();
-        if (doAnimateScroll) {
-            $presentationContents.animate({
-                marginTop: -presentationScrolledAmount
-            }, 1000);
-        }
-        else {
-            $presentationContents.css('margin-top', -presentationScrolledAmount);
-        }
+        // if (doAnimateScroll) {
+        //     $presentationContents.animate({
+        //         transform: `translateY(${-presentationScrolledAmount}px)`
+        //     }, 1000);
+        // }
+        // else {
+            $presentationContents.css('transform', `translateY(${-presentationScrolledAmount}px)`);
+        // }
     }
 });

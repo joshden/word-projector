@@ -26,6 +26,10 @@ body {
 #presenterFrame.presentation-active article header.top-line:hover, #presenterFrame.presentation-active article li.top-line:hover {
     text-decoration: line-through;
 }
+#presentationContents {
+    transition: transform 1s cubic-bezier(.02, .01, .47, 1);
+    will-change: transform;
+}
 #presentationContents article {
     opacity: 0;
 }
