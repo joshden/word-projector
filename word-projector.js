@@ -216,15 +216,14 @@ $(function() {
         const songsHtml = getSongsHtml(songs);
         $presenterContents.html(songsHtml);
 
-        $presenterContents.find('article header, article li').click(function() {
+        $presenterContents.find('article h1, article h2, article li').click(function() {
             if (popup) {
                 const $clickedLine = $(this);
                 const $article = $clickedLine.parents('article').first();
-                const isHeader = $clickedLine.is('header');
 
                 const song = $article.prevAll('article').length;
-                const stanza = isHeader ? null : $clickedLine.parent().prevAll('ol').length;
-                const line = isHeader ? null : $clickedLine.prevAll('li').length;
+                const stanza = $clickedLine.parent().prevAll().length;
+                const line = $clickedLine.prevAll().length;
                 const shouldUnselect = $clickedLine.hasClass(topLineClass);
 
                 socket.emit(`songLine:${shouldUnselect?'un':''}select`, song, stanza, line);
@@ -255,9 +254,7 @@ $(function() {
     function setCurrentSelectionAndStopAnimationAndGetInfo(song, stanza, line) {
         const articleSelector = `article:nth-of-type(${song + 1})`;
         const isSwitchingArticle = $(articleSelector).get(0) !== $(activeArticle).get(0);
-        const scrollToSelector = articleSelector + (
-            line === null ? '> header' 
-            : `> ol:nth-of-type(${stanza + 1}) > li:nth-of-type(${line + 1})`);
+        const scrollToSelector = articleSelector + ` > :nth-child(${stanza + 1}) > :nth-child(${line + 1})`;
 
         $currentSelection = $presenterContents.find(scrollToSelector);
         $presentationContents.stop(true);

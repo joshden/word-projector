@@ -19,7 +19,7 @@ body {
 #presenterFrame article:not(.active) {
     opacity: 0.4;
 }
-#presenterFrame.presentation-active article header:hover, #presenterFrame.presentation-active article li:hover {
+#presenterFrame.presentation-active article > * > :hover {
     cursor: pointer;
     text-decoration: underline dotted;
 }
