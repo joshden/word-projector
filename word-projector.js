@@ -1,4 +1,4 @@
-$(function() {
+$.get('/ccli', function(ccliLicense) {
     const widthByHeight = [16, 9];
     const aspectRatio = widthByHeight[0] / widthByHeight[1];
     let popup = null;
@@ -167,7 +167,8 @@ $(function() {
             return fullText
         }
         function stanzasAndFooter(song) {
-            return song.copyright ? '<footer><h1>(Words only in hymnal)</h1></footer>' : `
+            const canShowWords = ! song.copyright || (ccliLicense && song.ccliSongNumber && song.ccliCopyrights);
+            return ! canShowWords ? '<footer><h1>(Words only in hymnal)</h1></footer>' : `
                 ${song.stanzas.map(stanza => stanza.lines).map(lines => `
                 <ol>${lines.map(line => `
                     <li>${escape(line)}</li>`).join('')}
@@ -176,7 +177,9 @@ $(function() {
 
                 <footer>
                     <h1>${escape(song.title)}</h1>
-                    <h2>${escape(fullAuthorText(song))}</h2>
+                    <h2>${escape(fullAuthorText(song))}</h2>${song.ccliCopyrights ? `
+                    <h3>© ${escape(song.ccliCopyrights)}</h3>
+                    <h3>CCLI License # ${ccliLicense}</h3>` : ''}
                 </footer>
             `;
         }
@@ -216,7 +219,7 @@ $(function() {
         const songsHtml = getSongsHtml(songs);
         $presenterContents.html(songsHtml);
 
-        $presenterContents.find('article h1, article h2, article li').click(function() {
+        $presenterContents.find('article h1, article h2, article h3, article li').click(function() {
             if (popup) {
                 const $clickedLine = $(this);
                 const $article = $clickedLine.parents('article').first();

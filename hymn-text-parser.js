@@ -23,7 +23,8 @@ const songLocations = {
     afterFirstAuthor: 3,
     afterHeader: 4,
     inStanzas: 5,
-    skipToNextSong: 6
+    afterStanzas: 6,
+    skipToNextSong: 7
 };
 
 const songs = [];
@@ -308,11 +309,11 @@ function handleDocxFile(path, data) {
                 return;
             }
     
-            else if (currentSongLocation === songLocations.afterHeader || currentSongLocation === songLocations.inStanzas) {
-                const match = line.trim().match(/^(\d+)\. (.+)$/);
-                if (match) {
-                    const verseNumber = Number(match[1]);
-                    const restOfLine = match[2];
+            else if (currentSongLocation === songLocations.afterHeader || currentSongLocation === songLocations.inStanzas || currentSongLocation === songLocations.afterStanzas) {
+                const stanzaStartMatch = line.trim().match(/^(\d+)\. (.+)$/);
+                if (stanzaStartMatch && currentSongLocation < songLocations.afterStanzas) {
+                    const verseNumber = Number(stanzaStartMatch[1]);
+                    const restOfLine = stanzaStartMatch[2];
                     if (currentStanza && currentStanza.majestyVerse + 1 !== verseNumber) {
                         return songError(`Expected stanza #${currentStanza.majestyVerse + 1}, but found: ${line}`);
                     }
@@ -323,16 +324,35 @@ function handleDocxFile(path, data) {
                     currentSong.stanzas.push(currentStanza);
                 }
                 else {
-                    if (! currentStanza) {
-                        return songError(`Expected the beginning of a stanza, but found: ${line}`);
-                    }
-                    else if (line.trim().startsWith('© Copyright')) {
+                    const ccliSongNumberMatch = line.trim().match(/^CCLI Song #: (\d+)$/);
+                    const ccliCopyrightsMatch = line.trim().match(/^CCLI Copyrights: (.+)$/);
+                    if (line.trim().startsWith('© Copyright') && ! currentSong.copyright) {
                         currentSong.copyright = line.trim();
                         currentStanza = null;
-                        currentSong = null;
-                        currentSongLocation = songLocations.before;
+                        currentSongLocation = songLocations.afterStanzas;
+                    }
+                    else if (ccliSongNumberMatch && ! currentSong.ccliSongNumber) {
+                        currentSong.ccliSongNumber = Number(ccliSongNumberMatch[1]);
+                        currentStanza = null;
+                        currentSongLocation = songLocations.afterStanzas;
+                    }
+                    else if (ccliCopyrightsMatch && ! currentSong.ccliCopyrightsMatch) {
+                        currentSong.ccliCopyrights = ccliCopyrightsMatch[1];
+                        currentStanza = null;
+                        currentSongLocation = songLocations.afterStanzas;
+                    }
+                    else if (! currentStanza && currentSongLocation < songLocations.afterStanzas) {
+                        return songError(`Expected the beginning of a stanza, but found: ${line}`);
+                    }
+                    else if (currentSongLocation >= songLocations.afterStanzas) {
+                        if (line.trim().length > 0) {
+                            return songError(`Found unexpected non-empty line after stanzas: ${line}`);
+                        }
                     }
                     else {
+                        if (line.toUpperCase().includes('CCLI')) {
+                            songWarning(`Possibly invalid CCLI line: ${line.trim()}`);
+                        }
                         if (line.includes('©') || line.toLowerCase().includes('copyright')) {
                             songWarning(`Invalid copyright line: ${line.trim()}`);
                         }
@@ -397,6 +417,26 @@ function cleanAndOutputSongs() {
         });
     }
     else {
+        // songs.sort((a, b) => {
+        //     if (a.majestyNumber !== b.majestyNumber) {
+        //         if (! a.majestyNumber) return 1;
+        //         if (! b.majestyNumber) return -1;
+        //         return a.majestyNumber - b.majestyNumber;
+        //     }
+        //     const aTitle = a.title.toUpperCase();
+        //     const bTitle = b.title.toUpperCase();
+        //     if (aTitle !== bTitle) {
+        //         return aTitle < bTitle ? -1 : 1;
+        //     }
+        //     else {
+        //         const aJson = JSON.stringify(a);
+        //         const bJson = JSON.stringify(b);
+        //         if (aJson === bJson) {
+        //             return 0;
+        //         }
+        //         return aJson < bJson ? -1 : 1;
+        //     }
+        // });
         console.log(JSON.stringify(songs, null, 2));
     }
 }

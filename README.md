@@ -50,6 +50,14 @@ node hymn-text-parser.js 'data/files/Hymns/*.docx' > data/songs.json
 node hymn-text-parser.js 'data/files/Hymns.zip' > data/songs.json
 ```
 
+## Specify CCLI license (optional)
+
+```bash
+cp ccli.sample.json data/ccli.json
+```
+
+Change the 0 to your license number. Must be a JSON number value.
+
 ## Running word-projector
 
 1. In the root directory (with this README), start the server:
