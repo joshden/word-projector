@@ -19,11 +19,11 @@ body {
 #presenterFrame article:not(.active) {
     opacity: 0.4;
 }
-#presenterFrame.presentation-active article > * > :hover {
+#presenterFrame article > * > :hover {
     cursor: pointer;
     text-decoration: underline dotted;
 }
-#presenterFrame.presentation-active article header.top-line:hover, #presenterFrame.presentation-active article li.top-line:hover {
+#presenterFrame article header.top-line:hover, #presenterFrame article li.top-line:hover {
     text-decoration: line-through;
 }
 #presentationContents article {

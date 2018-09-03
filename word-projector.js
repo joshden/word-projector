@@ -108,10 +108,8 @@ $.get('/ccli', function(ccliLicense) {
                 $presentationBottomFade = $presentationFrame.find('#presentationBottomFade');
                 $presenterAndPresentation = $presenterContents.add($presentationContents);
                 loadPresentationSongs(plannedSongs);
-                $presenterFrame.addClass('presentation-active');
                 popup.onunload = function() {
                     popup = null;
-                    $presenterFrame.removeClass('presentation-active');
                     $launchPresentation.text('Launch Presentation');
                 };
                 handlePresentationWindowResize();
@@ -220,17 +218,15 @@ $.get('/ccli', function(ccliLicense) {
         $presenterContents.html(songsHtml);
 
         $presenterContents.find('article h1, article h2, article h3, article li').click(function() {
-            if (popup) {
-                const $clickedLine = $(this);
-                const $article = $clickedLine.parents('article').first();
+            const $clickedLine = $(this);
+            const $article = $clickedLine.parents('article').first();
 
-                const song = $article.prevAll('article').length;
-                const stanza = $clickedLine.parent().prevAll().length;
-                const line = $clickedLine.prevAll().length;
-                const shouldUnselect = $clickedLine.hasClass(topLineClass);
+            const song = $article.prevAll('article').length;
+            const stanza = $clickedLine.parent().prevAll().length;
+            const line = $clickedLine.prevAll().length;
+            const shouldUnselect = $clickedLine.hasClass(topLineClass);
 
-                socket.emit(`songLine:${shouldUnselect?'un':''}select`, song, stanza, line);
-            }
+            socket.emit(`songLine:${shouldUnselect?'un':''}select`, song, stanza, line);
         });
     });
 
