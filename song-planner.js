@@ -2,6 +2,7 @@ $.get('data/songs.json', allSongs => {
     let id = 0;
     allSongs.forEach(song => song.id = ++id);
     let previousIds = [];
+    let doKeepChange = false;
     const $select = $('#songs').selectize({
         plugins: ['remove_button', 'drag_drop', 'restore_on_backspace'],
         maxItems: null,
@@ -10,8 +11,13 @@ $.get('data/songs.json', allSongs => {
         searchField: 'title',
         options: allSongs,
         onChange: function(ids) {
-            if (! _.isEqual(previousIds, ids)) {
+            if (doKeepChange) {
+                doKeepChange = false;
                 previousIds = ids;
+            }
+            else if (! _.isEqual(previousIds, ids)) {
+                doKeepChange = true;
+                this.setValue(previousIds);
                 socket.emit('songs:change', ids.map(id => parseInt(id, 10)));
             }
         },
@@ -34,8 +40,7 @@ $.get('data/songs.json', allSongs => {
 
     socket.on('songs:change', ids => {
         const selectize = $select[0].selectize;
-
-        previousIds = ids.map(id => id.toString());
+        doKeepChange = true;
         selectize.setValue(ids);
 
         const songs = ids.map(id =>
