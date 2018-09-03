@@ -45,5 +45,8 @@ $.get('data/songs.json', allSongs => {
         $('#presenterFrame').trigger('songs:change', [songs]);
     });
     
+    socket.on('reconnect', () => {
+        socket.emit('songs:ready');
+    });
     socket.emit('songs:ready');
 });
