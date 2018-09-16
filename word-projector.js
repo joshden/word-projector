@@ -1,127 +1,84 @@
-$.get('/ccli', function(ccliLicense) {
-    const widthByHeight = [16, 9];
-    const aspectRatio = widthByHeight[0] / widthByHeight[1];
-    let popup = null;
-    let $currentSelection = null;
-    const $launchPresentation = $('#launchPresentation');
-    const $liveFrame = $('#liveFrame');
-    const $presenterFrame = $('#presenterFrame');
-    const $presenterContents = $('#presenterContents');
-    const activeClass = 'active';
-    const activeArticle = 'article.' + activeClass;
-    const topLineClass = 'top-line';
-    let $presentationHtml = $();
-    let $presentationFrame = $();
-    let $presentationContents = $();
-    let $presentationBottomFade = $();
-    let $presenterAndPresentation = $presenterContents;
+class WordProjector {
+    constructor() {
+        const widthByHeight = [16, 9];
+        this.aspectRatio = widthByHeight[0] / widthByHeight[1];
+        this.$wordContents = null;
 
-    $(window).resize(setPresenterFontSizeAndLiveFramePosition);
+        this.ccliLicense = false;
 
-    let presentationScrolledAmount = 0;
+        this.allSongs = [];
+        this.currentSongs = [];
+        this.currentSongLineAction = null;
+        this.currentSong = null;
+        this.currentStanza = null;
+        this.currentLine = null;
 
-    function borderWidth($obj, side) {
-        return Number($obj.css(`border${side}Width`).slice(0, -2));
+        this.onSongsLoadedCallbacks = [];
+        this.onSongsChangeCallbacks = [];
+        this.onSongLineSelectCallbacks = [];
+        this.onSongLineUnselectCallbacks = [];
+
+        this.socket = io({ transports: ['polling'] });
+        this.socket.on('reconnect', () => {
+            socket.emit('songs:ready');
+        });
+        this.socket.on('songs:change', ids => {
+            this.currentSongs = ids.map(id =>
+                this.allSongs.find(song =>
+                    song.id === id));
+            this.currentSongLineAction = this.currentSong = this.currentStanza = this.currentLine = null;
+            this.onSongsChangeCallbacks.forEach(callback => callback(this.currentSongs));
+        });
+        this.socket.on('songLine:select', (song, stanza, line) => {
+            this.currentSong = song;
+            this.currentStanza = stanza;
+            this.currentLine = line;
+            this.currentSongLineAction = 'select';
+            this.onSongLineSelectCallbacks.forEach(callback => callback(song, stanza, line));
+        });
+        this.socket.on('songLine:unselect', (song, stanza, line) => {
+            this.currentSong = song;
+            this.currentStanza = stanza;
+            this.currentLine = line;
+            this.currentSongLineAction = 'unselect';
+            this.onSongLineUnselectCallbacks.forEach(callback => callback(song, stanza, line));
+        });
+
+        const ccliPromise = $.get('/ccli', ccliLicense => this.ccliLicense = ccliLicense);
+        const songsPromise = $.get('data/songs.json', songs => {
+            let id = 0;
+            songs.forEach(song => song.id = ++id);
+            this.allSongs = songs;
+            this.onSongsLoadedCallbacks.forEach(callback => callback(songs));
+        });
+
+        $.when(ccliPromise, songsPromise).then(() => this.socket.emit('songs:ready'));
     }
 
-    function setPresenterFontSizeAndLiveFramePosition() {
-        const windowWidth = window.innerWidth;
-        const presenterWidth = $presenterFrame.width();
-
-        $presenterContents.css('font-size', (presenterWidth / windowWidth) + 'em');
-
-        setLiveFramePosition();
+    changeSongs(songIds) {
+        this.socket.emit('songs:change', songIds);
     }
 
-    function setLiveFramePosition() {
-        const presenterWidth = $presenterFrame.width();
-
-        if ($currentSelection) {
-            const liveFrameHeight = presenterWidth / aspectRatio;
-            $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
-            $liveFrame.css('width', String(presenterWidth - borderWidth($liveFrame, 'Left') - borderWidth($liveFrame, 'Left')) + 'px');
-            $liveFrame.css('top', $currentSelection.offset().top);
-            $liveFrame.show();
-        }
-        else {
-            $liveFrame.hide();
-        }
+    selectSongLine(song, stanza, line) {
+        this.socket.emit(`songLine:select`, song, stanza, line);
+    }
+    
+    unselectSongLine(song, stanza, line) {
+        this.socket.emit(`songLine:unselect`, song, stanza, line);
     }
 
-    function unselectSong() {
-        $presenterAndPresentation.find(activeArticle).removeClass(activeClass);
+    get activeClass() {
+        return 'active';
+    }
+    get activeArticle() {
+        return 'article.' + this.activeClass;
+    }
+    get topLineClass() {
+        return 'top-line';
     }
 
-    function updatePresentationScrolledAmount() {
-        const $topLine = $presentationContents.find('.' + topLineClass);
-        if ($topLine.length) {
-            presentationScrolledAmount = -$presentationContents.offset().top + $topLine.offset().top;
-        }
-        else {
-            presentationScrolledAmount = 0;
-        }
-    }
-
-    let plannedSongs = [];
-
-    function loadPresentationSongs(plannedSongs) {
-        const songsHtml = getSongsHtml(plannedSongs);
-        $currentSelection = null;
-        setPresenterFontSizeAndLiveFramePosition();
-        $presentationContents.find('article').remove();
-        $presentationContents.append(songsHtml)
-    }
-
-    function handlePresentationWindowResize() {
-        const popupWidth = popup.document.documentElement.clientWidth;
-        const popupHeight = popup.document.documentElement.clientHeight;
-
-        if (popupWidth > popupHeight * aspectRatio) {
-            const scaledFrameWidth = popupHeight * aspectRatio;
-            $presentationFrame.css('width', scaledFrameWidth + 'px');
-            $presentationFrame.css('height', popupHeight + 'px');
-            $presentationContents.add($presentationBottomFade).css('font-size', (scaledFrameWidth / popupWidth) + 'em');
-        }
-
-        else {
-            $presentationFrame.css('width', '');
-            $presentationFrame.css('height', (popupWidth / aspectRatio) + 'px');
-            $presentationContents.add($presentationBottomFade).css('font-size', '');
-        }
-
-        updatePresentationScrolledAmount();
-        $presentationContents.css('margin-top', -presentationScrolledAmount);
-    }
-
-    $launchPresentation.click(function() {
-        if (popup) {
-            popup.close();
-        }
-        else {
-            presentationScrolledAmount = 0;
-            const initialWidth = 800;
-            popup = window.open('presentation.html', '_blank', `height=${initialWidth/aspectRatio},width=${initialWidth},scrollbars=no`);
-            popup.onload = function() {
-                $presentationHtml = $(popup.document).find('html');
-                $presentationFrame = $presentationHtml.find('#presentationFrame');
-                $presentationContents = $presentationFrame.find('#presentationContents');
-                $presentationBottomFade = $presentationFrame.find('#presentationBottomFade');
-                $presenterAndPresentation = $presenterContents.add($presentationContents);
-                loadPresentationSongs(plannedSongs);
-                popup.onunload = function() {
-                    popup = null;
-                    $launchPresentation.text('Launch Presentation');
-                };
-                handlePresentationWindowResize();
-                unselectSong();
-                socket.emit('songLine:ready');
-            };
-            $(popup).resize(handlePresentationWindowResize);
-            $launchPresentation.text('Close Presentation');
-        }
-    });
-
-    function getSongsHtml(songs) {
+    getSongsHtml(songs) {
+        const ccliLicense = this.ccliLicense;
         function hymnalNumber(song) {
             return song.majestyNumber ? ` #${song.majestyNumber.toFixed()}` : '';
         }
@@ -208,69 +165,73 @@ $.get('/ccli', function(ccliLicense) {
         return songsHtml;
     }
 
-    $presenterFrame.on('songs:change', (e, songs) => {
-        plannedSongs = songs;
-        loadPresentationSongs(plannedSongs);
-    });
+    unselectSong() {
+        this.$wordContents.find(this.activeArticle).removeClass(this.activeClass);
+    }
 
-    $presenterFrame.on('songs:change', (e, songs) => {
-        const songsHtml = getSongsHtml(songs);
-        $presenterContents.html(songsHtml);
+    setTopLine(song, stanza, line) {
+        this.setTopLineAndGetSelectionInfo(song, stanza, line);
+    }
 
-        $presenterContents.find('article h1, article h2, article h3, article li').click(function() {
-            const $clickedLine = $(this);
-            const $article = $clickedLine.parents('article').first();
-
-            const song = $article.prevAll('article').length;
-            const stanza = $clickedLine.parent().prevAll().length;
-            const line = $clickedLine.prevAll().length;
-            const shouldUnselect = $clickedLine.hasClass(topLineClass);
-
-            socket.emit(`songLine:${shouldUnselect?'un':''}select`, song, stanza, line);
-        });
-    });
-
-    socket.on('songLine:select', (song, stanza, line) => {
-        const { articleSelector, isSwitchingArticle, scrollToSelector } = setCurrentSelectionAndStopAnimationAndGetInfo(song, stanza, line);
-        $presenterAndPresentation.find('.' + topLineClass).removeClass(topLineClass);
-        $presentationContents.find(scrollToSelector).addClass(topLineClass);
-        if (isSwitchingArticle) {
-            doAnimateScroll = false;
-            unselectSong();
-            $presenterAndPresentation.find(articleSelector).addClass('active');
-        }
-        setLiveFramePosition();
-        selectLineAndAnimate(!isSwitchingArticle);
-    });
-
-    socket.on('songLine:unselect', (song, stanza, line) => {
-        setCurrentSelectionAndStopAnimationAndGetInfo(song, stanza, line);
-        unselectSong();
-        setLiveFramePosition();
-        selectLineAndAnimate(true);
-    });
-
-    function setCurrentSelectionAndStopAnimationAndGetInfo(song, stanza, line) {
+    setTopLineAndGetSelectionInfo(song, stanza, line) {
         const articleSelector = `article:nth-of-type(${song + 1})`;
-        const isSwitchingArticle = $(articleSelector).get(0) !== $(activeArticle).get(0);
+        const isSwitchingArticle = $(articleSelector).get(0) !== $(this.activeArticle).get(0);
         const scrollToSelector = articleSelector + ` > :nth-child(${stanza + 1}) > :nth-child(${line + 1})`;
-
-        $currentSelection = $presenterContents.find(scrollToSelector);
-        $presentationContents.stop(true);
-        return { articleSelector, isSwitchingArticle, scrollToSelector };
+        this.$wordContents.find('.' + this.topLineClass).removeClass(this.topLineClass);
+        this.$wordContents.find(scrollToSelector).addClass(this.topLineClass);
+        return { articleSelector, isSwitchingArticle };
     }
 
-    function selectLineAndAnimate(doAnimateScroll) {
-        $currentSelection.toggleClass(topLineClass);
-    
-        updatePresentationScrolledAmount();
-        if (doAnimateScroll) {
-            $presentationContents.animate({
-                marginTop: -presentationScrolledAmount
-            }, 1000);
-        }
-        else {
-            $presentationContents.css('margin-top', -presentationScrolledAmount);
+    registerOnSongsLoaded(callback) {
+        this.onSongsLoadedCallbacks.push(callback);
+        callback(this.allSongs);
+    }
+
+    registerOnSongsChange(callback) {
+        this.onSongsChangeCallbacks.push(callback);
+        callback(this.currentSongs);
+    }
+
+    registerOnSongsChangeUpdateHtml($contents, callback) {
+        this.registerOnSongsChange(songs => {
+            const songsHtml = this.getSongsHtml(songs);
+            $contents.html(songsHtml);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+
+    registerOnSongLineSelect(callback) {
+        this.onSongLineSelectCallbacks.push(callback);
+        if (this.currentSongLineAction === 'select') {
+            callback(this.currentSong, this.currentStanza, this.currentLine);
         }
     }
-});
+
+    registerOnSongLineSelectHandleWhetherSwitchingArticle(callback) {
+        this.registerOnSongLineSelect((song, stanza, line) => {
+            const { articleSelector, isSwitchingArticle } = this.setTopLineAndGetSelectionInfo(song, stanza, line);
+            if (isSwitchingArticle) {
+                this.unselectSong();
+                this.$wordContents.find(articleSelector).addClass('active');
+            }
+            callback(isSwitchingArticle);
+        });
+    }
+
+    registerOnSongLineUnselect(callback) {
+        this.onSongLineUnselectCallbacks.push(callback);
+        if (this.currentSongLineAction === 'unselect') {
+            callback(this.currentSong, this.currentStanza, this.currentLine);
+        }
+    }
+
+    registerOnSongLineUnselectSetTopLineAndClearSong(callback) {
+        this.registerOnSongLineUnselect((song, stanza, line) => {
+            this.setTopLine(song, stanza, line);
+            this.unselectSong();
+            callback();
+        });
+    }
+}

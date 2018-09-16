@@ -1,9 +1,10 @@
-$.get('data/songs.json', allSongs => {
-    let id = 0;
-    allSongs.forEach(song => song.id = ++id);
+$(function() {
+    const $select = $('#songs');
+    let allSongs = [];
     let previousIds = [];
     let doKeepChange = false;
-    const $select = $('#songs').selectize({
+
+    $select.selectize({
         plugins: ['remove_button', 'drag_drop', 'restore_on_backspace'],
         maxItems: null,
         valueField: 'id',
@@ -18,7 +19,7 @@ $.get('data/songs.json', allSongs => {
             else if (! _.isEqual(previousIds, ids)) {
                 doKeepChange = true;
                 this.setValue(previousIds);
-                socket.emit('songs:change', ids.map(id => parseInt(id, 10)));
+                wordProjector.changeSongs(ids.map(id => parseInt(id, 10)));
             }
         },
 
@@ -38,20 +39,22 @@ $.get('data/songs.json', allSongs => {
         }
     });
 
-    socket.on('songs:change', ids => {
+    wordProjector.registerOnSongsLoaded(songs => {
+        let id = 0;
+        allSongs = songs;
+        allSongs.forEach(song => song.id = ++id);
+
         const selectize = $select[0].selectize;
+        selectize.clear();
+        selectize.clearOptions();
+        selectize.load(callback => callback(allSongs))
+    });
+
+    wordProjector.registerOnSongsChange(songs => {
+        const selectize = $select[0].selectize;
+        const ids = songs.map(song => song.id);
+
         doKeepChange = true;
         selectize.setValue(ids);
-
-        const songs = ids.map(id =>
-            allSongs.find(song =>
-                song.id === id));
-
-        $('#presenterFrame').trigger('songs:change', [songs]);
     });
-    
-    socket.on('reconnect', () => {
-        socket.emit('songs:ready');
-    });
-    socket.emit('songs:ready');
 });

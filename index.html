@@ -7,16 +7,16 @@
     <title>Word Projector</title>
 
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript">
-        socket = io({ transports: ['polling'] });
-    </script>
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="node_modules/screenfull/dist/screenfull.js"></script>
     <script type="text/javascript" src="node_modules/lodash/lodash.min.js"></script>
     <script type="text/javascript" src="node_modules/jquery-ui-dist/jquery-ui.min.js"></script>
     <script type="text/javascript" src="node_modules/selectize/dist/js/standalone/selectize.min.js"></script>
-    <script type="text/javascript" src="word-projector.js" async></script>
-    <script type="text/javascript" src="song-planner.js" async></script>
+    <script type="text/javascript" src="word-projector.js"></script>
+    <script>
+        wordProjector = new WordProjector();
+    </script>
+    <script type="text/javascript" src="presenter.js"></script>
+    <script type="text/javascript" src="song-planner.js"></script>
     <link rel="stylesheet" href="node_modules/purecss/build/pure-min.css">
     <link rel="stylesheet" href="node_modules/purecss/build/grids-responsive-min.css">
     <link rel="stylesheet" href="node_modules/selectize/dist/css/selectize.default.css">
