@@ -19,9 +19,6 @@ class WordProjector {
         this.onSongLineUnselectCallbacks = [];
 
         this.socket = io({ transports: ['polling'] });
-        this.socket.on('reconnect', () => {
-            socket.emit('songs:ready');
-        });
         this.socket.on('songs:change', ids => {
             this.currentSongs = ids.map(id =>
                 this.allSongs.find(song =>
@@ -52,7 +49,12 @@ class WordProjector {
             this.onSongsLoadedCallbacks.forEach(callback => callback(songs));
         });
 
-        $.when(ccliPromise, songsPromise).then(() => this.socket.emit('songs:ready'));
+        $.when(ccliPromise, songsPromise).then(() => {
+            this.socket.on('reconnect', () => {
+                this.socket.emit('songs:ready');
+            });
+            this.socket.emit('songs:ready');
+        });
     }
 
     changeSongs(songIds) {
