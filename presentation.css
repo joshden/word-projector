@@ -21,9 +21,9 @@ body {
 }
 #presenterFrame article > * > :hover {
     cursor: pointer;
-    text-decoration: underline dotted;
+    text-decoration: overline dotted;
 }
-#presenterFrame article header.top-line:hover, #presenterFrame article li.top-line:hover {
+#presenterFrame article.active > * > .top-line:hover {
     text-decoration: line-through;
 }
 #presentationContents article {
