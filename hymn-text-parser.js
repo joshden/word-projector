@@ -325,7 +325,7 @@ function handleDocxFile(path, data) {
                 }
                 else {
                     const ccliSongNumberMatch = line.trim().match(/^CCLI Song #: (\d+)$/);
-                    const ccliCopyrightsMatch = line.trim().match(/^CCLI Copyrights: (.+)$/);
+                    const ccliWordsCopyrightsMatch = line.trim().match(/^CCLI (Words )?Copyrights: (.+)$/);
                     if (line.trim().startsWith('© Copyright') && ! currentSong.copyright) {
                         currentSong.copyright = line.trim();
                         currentStanza = null;
@@ -336,10 +336,13 @@ function handleDocxFile(path, data) {
                         currentStanza = null;
                         currentSongLocation = songLocations.afterStanzas;
                     }
-                    else if (ccliCopyrightsMatch && ! currentSong.ccliCopyrightsMatch) {
-                        currentSong.ccliCopyrights = ccliCopyrightsMatch[1];
+                    else if (ccliWordsCopyrightsMatch && ! currentSong.ccliWordsCopyrights) {
+                        currentSong.ccliWordsCopyrights = ccliWordsCopyrightsMatch[2];
                         currentStanza = null;
                         currentSongLocation = songLocations.afterStanzas;
+                        if (currentSong.ccliWordsCopyrights !== 'Public Domain' && ! currentSong.ccliWordsCopyrights.match(/^\d{4}/)) {
+                            songWarning(`CCLI Words Copyrights: expected to start with a year, but found ${currentSong.ccliWordsCopyrights}`);
+                        }
                     }
                     else if (! currentStanza && currentSongLocation < songLocations.afterStanzas) {
                         return songError(`Expected the beginning of a stanza, but found: ${line}`);
@@ -397,7 +400,7 @@ function cleanAndOutputSongs() {
             });
 
             if (stanzaExtraBlankLines) {
-                errors.push({ message: 'Possibly extra blank lines found', majestyNumber: song.majestyNumber, title: song.title, majestyVerse: stanza.majestyVerse, lines, warning: true });
+                // errors.push({ message: 'Possibly extra blank lines found', majestyNumber: song.majestyNumber, title: song.title, majestyVerse: stanza.majestyVerse, lines, warning: true });
             }
         });
     });

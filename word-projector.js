@@ -124,7 +124,7 @@ class WordProjector {
             return fullText
         }
         function stanzasAndFooter(song) {
-            const canShowWords = ! song.copyright || (ccliLicense && song.ccliSongNumber && song.ccliCopyrights);
+            const canShowWords = ! song.copyright || (ccliLicense && song.ccliSongNumber && song.ccliWordsCopyrights);
             return ! canShowWords ? '<footer><h1>(Words only in hymnal)</h1></footer>' : `
                 ${song.stanzas.map(stanza => stanza.lines).map(lines => `
                 <ol>${lines.map(line => `
@@ -134,8 +134,8 @@ class WordProjector {
 
                 <footer>
                     <h1>${escape(song.title)}</h1>
-                    <h2>${escape(fullAuthorText(song))}</h2>${song.ccliCopyrights ? `
-                    <h3>© ${escape(song.ccliCopyrights)}</h3>
+                    <h2>${escape(fullAuthorText(song))}</h2>${song.ccliWordsCopyrights && song.ccliWordsCopyrights !== 'Public Domain' ? `
+                    <h3>© ${escape(song.ccliWordsCopyrights)}</h3>
                     <h3>CCLI License # ${ccliLicense}</h3>` : ''}
                 </footer>
             `;
