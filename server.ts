@@ -102,6 +102,14 @@ if (fs.existsSync(currentSongsPath)) {
     }
 }
 
-server.listen(8080, () => {
-    console.log('Listening on :8080');
+const port = 8080;
+server.listen(port, () => {
+    const addresses: string[] = [];
+    Object.values(os.networkInterfaces()).forEach(interfaces => {
+        interfaces
+            .filter(iface => iface.family === 'IPv4' && iface.internal === false)
+            .forEach(iface => addresses.push(`http://${iface.address}:${port}`))
+    })
+
+    console.log(`Listening on ${addresses.join('\n             ')}\n`);
 });
