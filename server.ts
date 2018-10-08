@@ -3,6 +3,7 @@ import http from 'http';
 import socketio, { Socket } from 'socket.io';
 import jsonfile from 'jsonfile';
 import fs from 'fs';
+import os from 'os';
 
 const currentSongsPath = __dirname + '/data/currentSongs.json';
 const ccliLicensePath = __dirname + '/data/ccli.json';
