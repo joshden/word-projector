@@ -50,6 +50,14 @@ node hymn-text-parser.js 'data/files/Hymns/*.docx' > data/songs.json
 node hymn-text-parser.js 'data/files/Hymns.zip' > data/songs.json
 ```
 
+## Specify CCLI license (optional)
+
+```bash
+cp ccli.sample.json data/ccli.json
+```
+
+Change the 0 to your license number. Must be a JSON number value.
+
 ## Running word-projector
 
 1. In the root directory (with this README), start the server:
@@ -60,12 +68,11 @@ node hymn-text-parser.js 'data/files/Hymns.zip' > data/songs.json
 
     e.g.
 
-    ```
-    Starting up http-server, serving ./
-    Available on:
-      http://192.168.8.22:8080
-      http://127.0.0.1:8080
-    Hit CTRL-C to stop the server
+    ```text
+    > word-projector@1.0.0 start C:\Users\Joshd\word-projector
+    > ts-node server.ts
+
+    Listening on :8080
     ```
 
-1. In a browser, navigate to http://localhost:8080/ (or whatever port it was started on)
+1. In a browser, navigate to <http://localhost:8080/>

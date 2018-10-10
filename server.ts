@@ -3,10 +3,24 @@ import http from 'http';
 import socketio, { Socket } from 'socket.io';
 import jsonfile from 'jsonfile';
 import fs from 'fs';
+import os from 'os';
 
 const currentSongsPath = __dirname + '/data/currentSongs.json';
+const ccliLicensePath = __dirname + '/data/ccli.json';
 
 const app = express();
+
+let ccliLicense: false | number = false;
+try {
+    const obj = jsonfile.readFileSync(ccliLicensePath);
+    ccliLicense = typeof obj === 'number' && obj > 0 ? obj : false;
+} catch (err) { 
+    /* default to false if CCLI file doesn't exist with valid number */ 
+}
+
+app.get('/ccli', function (req, res) {
+    res.json(ccliLicense);
+});
 app.use(express.static(__dirname));
 
 const server = http.createServer(app);
@@ -89,4 +103,14 @@ if (fs.existsSync(currentSongsPath)) {
     }
 }
 
-server.listen(8080);
+const port = 8080;
+server.listen(port, () => {
+    const addresses: string[] = [];
+    Object.values(os.networkInterfaces()).forEach(interfaces => {
+        interfaces
+            .filter(iface => iface.family === 'IPv4' && iface.internal === false)
+            .forEach(iface => addresses.push(`http://${iface.address}:${port}`))
+    })
+
+    console.log(`Listening on ${addresses.join('\n             ')}\n`);
+});

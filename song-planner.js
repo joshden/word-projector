@@ -1,8 +1,10 @@
-$.get('data/songs.json', allSongs => {
-    let id = 0;
-    allSongs.forEach(song => song.id = ++id);
+$(function() {
+    const $select = $('#songs');
+    let allSongs = [];
     let previousIds = [];
-    const $select = $('#songs').selectize({
+    let doKeepChange = false;
+
+    $select.selectize({
         plugins: ['remove_button', 'drag_drop', 'restore_on_backspace'],
         maxItems: null,
         valueField: 'id',
@@ -10,9 +12,14 @@ $.get('data/songs.json', allSongs => {
         searchField: 'title',
         options: allSongs,
         onChange: function(ids) {
-            if (! _.isEqual(previousIds, ids)) {
+            if (doKeepChange) {
+                doKeepChange = false;
                 previousIds = ids;
-                socket.emit('songs:change', ids.map(id => parseInt(id, 10)));
+            }
+            else if (! _.isEqual(previousIds, ids)) {
+                doKeepChange = true;
+                this.setValue(previousIds);
+                wordProjector.changeSongs(ids.map(id => parseInt(id, 10)));
             }
         },
 
@@ -32,18 +39,22 @@ $.get('data/songs.json', allSongs => {
         }
     });
 
-    socket.on('songs:change', ids => {
+    wordProjector.registerOnSongsLoaded(songs => {
+        let id = 0;
+        allSongs = songs;
+        allSongs.forEach(song => song.id = ++id);
+
         const selectize = $select[0].selectize;
-
-        previousIds = ids.map(id => id.toString());
-        selectize.setValue(ids);
-
-        const songs = ids.map(id =>
-            allSongs.find(song =>
-                song.id === id));
-
-        $('#presenterFrame').trigger('songs:change', [songs]);
+        selectize.clear();
+        selectize.clearOptions();
+        selectize.load(callback => callback(allSongs))
     });
-    
-    socket.emit('songs:ready');
+
+    wordProjector.registerOnSongsChange(songs => {
+        const selectize = $select[0].selectize;
+        const ids = songs.map(song => song.id);
+
+        doKeepChange = true;
+        selectize.setValue(ids);
+    });
 });
