@@ -6,15 +6,13 @@ $(function() {
     const $presentationContents = $('#presentationContents');
     const $presentationBottomFade = $('#presentationBottomFade');
 
-    let presentationScrolledAmount = 0;
-
     wordProjector.$wordContents = $presentationContents;
     wordProjector.registerOnSongsChangeUpdateHtml($presentationContents);
     wordProjector.registerOnSongLineSelectHandleWhetherSwitchingArticle(isSwitchingArticle => {
-        selectLineAndAnimate(!isSwitchingArticle);
+        scrollToSelectedTopLine(!isSwitchingArticle);
     });
     wordProjector.registerOnSongLineUnselectSetTopLineAndClearSong(() => {
-        selectLineAndAnimate(true);
+        scrollToSelectedTopLine(true);
     });
 
 
@@ -27,17 +25,17 @@ $(function() {
     });
 
 
-    function selectLineAndAnimate(doAnimateScroll) {
-        $presentationContents.stop(true);
-        updatePresentationScrolledAmount();
-        // if (doAnimateScroll) {
-        //     $presentationContents.animate({
-        //         marginTop: -presentationScrolledAmount
-        //     }, 1000);
-        // }
-        // else {
-            $presentationContents.css('transform', `translateY(${-presentationScrolledAmount}px)`);
-        // }
+    function scrollToSelectedTopLine(doAnimateScroll = false) {
+        const $topLine = $presentationContents.find('.' + wordProjector.topLineClass);
+        const presentationScrolledAmount = $topLine.length ? (-$presentationContents.offset().top + $topLine.offset().top) : 0;
+
+        if (doAnimateScroll) {
+            $presentationContents.addClass('animate-scroll');
+        }
+        else {
+            $presentationContents.removeClass('animate-scroll');
+        }
+        $presentationContents.css('transform', `translateY(${-presentationScrolledAmount}px)`);
     }
 
     function handlePresentationWindowResize() {
@@ -57,19 +55,8 @@ $(function() {
             $presentationContents.add($presentationBottomFade).css('font-size', '');
         }
 
-        updatePresentationScrolledAmount();
-        $presentationContents.css('transform', `translateY(${-presentationScrolledAmount}px)`);
+        scrollToSelectedTopLine(false);
     }
     handlePresentationWindowResize();
     $(window).resize(handlePresentationWindowResize);
-
-    function updatePresentationScrolledAmount() {
-        const $topLine = $presentationContents.find('.' + wordProjector.topLineClass);
-        if ($topLine.length) {
-            presentationScrolledAmount = -$presentationContents.offset().top + $topLine.offset().top;
-        }
-        else {
-            presentationScrolledAmount = 0;
-        }
-    }
 });
