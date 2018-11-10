@@ -292,12 +292,10 @@ function handleDocxFile(path, data) {
 
                 if (author) {
                     if (currentSong.author) {
-                        if (currentSong.author2) {
-                            songWarning(`Ignoring 3rd author that was found: ${author}`);
+                        if (! currentSong.otherAuthors) {
+                            currentSong.otherAuthors = [];
                         }
-                        else {
-                            currentSong.author2 = author;
-                        }
+                        currentSong.otherAuthors.push(author);
                     }
                     else {
                         currentSong.author = author;

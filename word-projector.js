@@ -85,32 +85,47 @@ class WordProjector {
             return song.majestyNumber ? ` #${song.majestyNumber.toFixed()}` : '';
         }
         function authorText(song) {
-            const author = song.author;
-            if (author.hasOwnProperty('scriptureRef')) {
-                return `From ${author.scriptureRef}`;
-            }
-            else if (author.hasOwnProperty('name')) {
-                return `By ${author.name}`;
-            }
-            else if (author.hasOwnProperty('basedOn')) {
-                return `Based on ${author.basedOn}`;
-            }
-            else if (author.hasOwnProperty('source')) {
-                return author.source;
-            }
-            else if (author.hasOwnProperty('scripture')) {
-                return author.scripture;
-            }
-            else if (author.hasOwnProperty('byWork')) {
-                return author.byWork;
-            }
-            else if (author.traditional) {
-                return 'Traditional'
-            }
-            else if (typeof author === 'string') {
-                return author;
-            }
-            return '';
+            const authors = [song.author].concat(song.otherAuthors ? song.otherAuthors : []);
+            const prefixAuthors = authors.map(author => {
+                if (author.hasOwnProperty('scriptureRef')) {
+                    return ['From', author.scriptureRef];
+                }
+                else if (author.hasOwnProperty('name')) {
+                    return ['By', author.name];
+                }
+                else if (author.hasOwnProperty('basedOn')) {
+                    return ['Based on', author.basedOn];
+                }
+                else if (author.hasOwnProperty('source')) {
+                    return ['', author.source];
+                }
+                else if (author.hasOwnProperty('scripture')) {
+                    return ['', author.scripture];
+                }
+                else if (author.hasOwnProperty('byWork')) {
+                    return ['', author.byWork];
+                }
+                else if (author.traditional) {
+                    return ['', 'Traditional'];
+                }
+                else if (typeof author === 'string') {
+                    return ['', author];
+                }
+                return undefined;
+            }).filter(v => v !== undefined);
+            let authorText = '';
+            let previousPrefix = '';
+            prefixAuthors.forEach(prefixAuthor => {
+                const [prefix, author] = prefixAuthor;
+                if (prefix === previousPrefix) {
+                    authorText += ((authorText.length > 0) ? ', ' : '') + author;
+                }
+                else {
+                    authorText += ((authorText.length > 0) ? '; ' : '') + prefix + ' ' + author;
+                }
+                previousPrefix = prefix;
+            });
+            return authorText;
         }
         function fullAuthorText(song) {
             let fullText = authorText(song);
@@ -121,7 +136,7 @@ class WordProjector {
                 }
                 fullText += propName.substr(0, propName.length-2) + ' by ' + song[propName].name;
             });
-            return fullText
+            return fullText;
         }
         function stanzasAndFooter(song) {
             const canShowWords = ! song.copyright || (ccliLicense && song.ccliSongNumber && song.ccliWordsCopyrights);
