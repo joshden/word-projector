@@ -12,6 +12,7 @@ With [Node.js](https://nodejs.org) installed,
 
 ```bash
 npm install
+npm run build
 ```
 
 ## Populating song words
@@ -76,3 +77,7 @@ Change the 0 to your license number. Must be a JSON number value.
     ```
 
 1. In a browser, navigate to <http://localhost:8080/>
+
+## Developer guide
+
+word-projector uses webpack for asset bundlinng. Front-end code needs to be built from the TypeScript sources. Use `npm run build` to build it or `npm run build -- --watch` to build as you make changes to the sources.

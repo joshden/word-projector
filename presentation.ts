@@ -1,3 +1,7 @@
+import WordProjector from './word-projector';
+import $ from 'jquery';
+import screenfull from 'screenfull';
+
 $(function() {
     const wordProjector = new WordProjector();
     const aspectRatio = wordProjector.aspectRatio;
@@ -21,13 +25,13 @@ $(function() {
     });
 
     $fullscreen.find('button.makeFullscreen').click(function() {
-        screenfull.request();
+        if (screenfull) screenfull.request();
     });
 
 
     function scrollToSelectedTopLine(doAnimateScroll = false) {
         const $topLine = $presentationContents.find('.' + wordProjector.topLineClass);
-        const presentationScrolledAmount = $topLine.length ? (-$presentationContents.offset().top + $topLine.offset().top) : 0;
+        const presentationScrolledAmount = $topLine.length ? (-($presentationContents.offset() as JQuery.Coordinates).top + ($topLine.offset() as JQuery.Coordinates).top) : 0;
 
         if (doAnimateScroll) {
             $presentationContents.addClass('animate-scroll');
@@ -39,8 +43,8 @@ $(function() {
     }
 
     function handlePresentationWindowResize() {
-        const clientWidth = document.documentElement.clientWidth;
-        const clientHeight = document.documentElement.clientHeight;
+        const clientWidth = (document.documentElement as HTMLElement).clientWidth;
+        const clientHeight = (document.documentElement as HTMLElement).clientHeight;
 
         if (clientWidth > clientHeight * aspectRatio) {
             const scaledFrameWidth = clientHeight * aspectRatio;
