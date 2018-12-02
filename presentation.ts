@@ -2,6 +2,10 @@ import WordProjector from './word-projector';
 import $ from 'jquery';
 import screenfull from 'screenfull';
 
+import 'purecss/build/pure-min.css';
+import 'purecss/build/grids-responsive-min.css';
+import './presentation.css';
+
 $(function() {
     const wordProjector = new WordProjector();
     const aspectRatio = wordProjector.aspectRatio;

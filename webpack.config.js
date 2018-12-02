@@ -1,5 +1,6 @@
 const path = require('path');
-// const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     mode: 'development',
@@ -13,6 +14,21 @@ module.exports = {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader'
+                ]
+            },
+            {
+                test: /\.(svg)$/,
+                use: ['file-loader']
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf|otf)$/,
+                use: ['file-loader']
             }
         ]
     },
@@ -20,7 +36,7 @@ module.exports = {
         extensions: ['.tsx', '.ts', '.js']
     },
     output: {
-        filename: '[name].bundle.js',
+        // filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist')
     },
     optimization: {
@@ -28,9 +44,18 @@ module.exports = {
             chunks: 'all'
         }
     },
-    // plugins: [new HtmlWebpackPlugin({
-    //     chunks: ['presenter'],
-    //     filename: 'presenter2.html'
-    // })],
+    plugins: [
+        new CleanWebpackPlugin(['dist']),
+        new HtmlWebpackPlugin({
+            chunks: ['main'],
+            template: 'index.html',
+            filename: 'index.html'
+        }),
+        new HtmlWebpackPlugin({
+            chunks: ['presentation'],
+            template: 'presentation.html',
+            filename: 'presentation.html'
+        }),
+    ],
     node: {}
 };

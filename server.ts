@@ -21,7 +21,8 @@ try {
 app.get('/ccli', function (req, res) {
     res.json(ccliLicense);
 });
-app.use(express.static(__dirname));
+app.use('/data', express.static(__dirname + '/data'));
+app.use(express.static(__dirname + '/dist'));
 
 const server = http.createServer(app);
 
