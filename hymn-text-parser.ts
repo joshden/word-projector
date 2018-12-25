@@ -1,7 +1,7 @@
 import glob from "glob";
 import fs from "fs";
 import jszip from "jszip";
-import Song, { Stanza, Author } from "./song";
+import Song, { Stanza, Author, BuildingSong } from "./song";
 import getDocxTextLines from './docx-text-lines';
 
 
@@ -37,7 +37,7 @@ type Error = string | {
     warning?: boolean;
 };
 
-const songs: Song[] = [];
+const songs: BuildingSong[] = [];
 const errors: Error[] = [];
 let id = 0;
 
@@ -88,7 +88,7 @@ glob(pattern, (err, files) => {
 function handleDocxFile(path: string, data: Buffer | Promise<Buffer>) {
     return Promise.resolve().then(() => getDocxTextLines(path, data)).then(lines => {
         // console.log(JSON.stringify(lines, null, 2));
-        let currentSong: Song;
+        let currentSong: BuildingSong;
         let currentStanza: Stanza | null = null;
         let isScriptureSong = false;
         let isNonMajestySong = false;
@@ -432,9 +432,22 @@ function handleDocxFile(path: string, data: Buffer | Promise<Buffer>) {
     }).catch(msg => errors.push({path: path, message: msg}));
 }
 
+function validateSongFullyBuilt(song: BuildingSong): song is Song {
+    const newErrors: Error[] = [];
+    if (song.author === undefined) {
+        newErrors.push(`Song with no author: ${song.title}`);
+    }
+    errors.push(...newErrors);
+    return newErrors.length < 1;
+}
+
 function cleanAndOutputSongs() {
     const majestyNumberCounts = new Map();
+    const builtSongs: Song[] = [];
     songs.forEach(song => {
+        if (validateSongFullyBuilt(song)) {
+            builtSongs.push(song);
+        }
         const majestyNumber = song.majestyNumber;
         if (majestyNumber !== undefined) {
             if (! majestyNumberCounts.has(majestyNumber)) {
@@ -482,7 +495,7 @@ function cleanAndOutputSongs() {
         });
     }
     else {
-        // songs.sort((a, b) => {
+        // builtSongs.sort((a, b) => {
         //     if (a.majestyNumber !== b.majestyNumber) {
         //         if (! a.majestyNumber) return 1;
         //         if (! b.majestyNumber) return -1;
@@ -502,6 +515,6 @@ function cleanAndOutputSongs() {
         //         return aJson < bJson ? -1 : 1;
         //     }
         // });
-        console.log(JSON.stringify(songs, null, 2));
+        console.log(JSON.stringify(builtSongs, null, 2));
     }
 }

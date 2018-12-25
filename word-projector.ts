@@ -1,23 +1,27 @@
 import $ from 'jquery';
 import io from 'socket.io-client';
 import _ from 'lodash';
+import Song from './song';
+import apiVal, { SongLineAction } from './apiValues';
 
 export default class WordProjector {
     readonly aspectRatio: number;
     $wordContents = $();
     ccliLicense: number | false = false;
-    allSongs: any[] = [];
+    allSongs: Song[] = [];
 
-    currentSongs: any[] = [];
-    currentSongLineAction : 'select' | 'unselect' | null = null;
-    currentSong: number | null = null;
-    currentStanza: number | null = null;
-    currentLine: number | null = null;
+    currentSongs: Song[] = [];
+    currentSongLineAction : SongLineAction = null;
+    currentSongStanzaLine: null | {
+        song: number,
+        stanza: number,
+        line: number
+    } = null;
 
-    onSongsLoadedCallbacks: any[] = [];
-    onSongsChangeCallbacks: any[] = [];
-    onSongLineSelectCallbacks: any[] = [];
-    onSongLineUnselectCallbacks: any[] = [];
+    onSongsLoadedCallbacks: SongsCallback[] = [];
+    onSongsChangeCallbacks: SongsCallback[] = [];
+    onSongLineSelectCallbacks: SongStanzaLineCallback[] = [];
+    onSongLineUnselectCallbacks: SongStanzaLineCallback[] = [];
 
     socket = io({ transports: ['polling'] });
 
@@ -26,30 +30,31 @@ export default class WordProjector {
         this.aspectRatio = widthByHeight[0] / widthByHeight[1];
 
         this.socket = io({ transports: ['polling'] });
-        this.socket.on('songs:change', (ids: number[]) => {
-            this.currentSongs = ids.map(id =>
-                this.allSongs.find(song =>
-                    song.id === id));
-            this.currentSongLineAction = this.currentSong = this.currentStanza = this.currentLine = null;
+        this.socket.on(apiVal.songs_change, (ids: number[]) => {
+            this.currentSongs = [];
+            ids
+                .map(id => this.allSongs.find(song => song.id === id))
+                .forEach(song => {
+                    if (song !== undefined) {
+                        this.currentSongs.push(song);
+                    }
+                });
+            this.currentSongLineAction = this.currentSongStanzaLine = null;
             this.onSongsChangeCallbacks.forEach(callback => callback(this.currentSongs));
         });
-        this.socket.on('songLine:select', (song: number, stanza: number, line: number) => {
-            this.currentSong = song;
-            this.currentStanza = stanza;
-            this.currentLine = line;
-            this.currentSongLineAction = 'select';
+        this.socket.on(apiVal.songLine_select, (song: number, stanza: number, line: number) => {
+            this.currentSongStanzaLine = { song, stanza, line };
+            this.currentSongLineAction = apiVal.select;
             this.onSongLineSelectCallbacks.forEach(callback => callback(song, stanza, line));
         });
-        this.socket.on('songLine:unselect', (song: number, stanza: number, line: number) => {
-            this.currentSong = song;
-            this.currentStanza = stanza;
-            this.currentLine = line;
-            this.currentSongLineAction = 'unselect';
+        this.socket.on(apiVal.songLine_unselect, (song: number, stanza: number, line: number) => {
+            this.currentSongStanzaLine = { song, stanza, line };
+            this.currentSongLineAction = apiVal.unselect;
             this.onSongLineUnselectCallbacks.forEach(callback => callback(song, stanza, line));
         });
 
-        const ccliPromise = $.get('/ccli', ccliLicense => this.ccliLicense = ccliLicense);
-        const songsPromise = $.get('data/songs.json', (songs: any[]) => {
+        const ccliPromise = $.get(apiVal.ccli, ccliLicense => this.ccliLicense = ccliLicense);
+        const songsPromise = $.get('data/songs.json', (songs: Song[]) => {
             let id = 0;
             songs.forEach(song => song.id = ++id);
             this.allSongs = songs;
@@ -58,22 +63,22 @@ export default class WordProjector {
 
         $.when(ccliPromise, songsPromise).then(() => {
             this.socket.on('reconnect', () => {
-                this.socket.emit('songs:ready');
+                this.socket.emit(apiVal.songs_ready);
             });
-            this.socket.emit('songs:ready');
+            this.socket.emit(apiVal.songs_ready);
         });
     }
 
     changeSongs(songIds: number[]) {
-        this.socket.emit('songs:change', songIds);
+        this.socket.emit(apiVal.songs_change, songIds);
     }
 
     selectSongLine(song: number, stanza: number, line: number) {
-        this.socket.emit(`songLine:select`, song, stanza, line);
+        this.socket.emit(apiVal.songLine_select, song, stanza, line);
     }
     
     unselectSongLine(song: number, stanza: number, line: number) {
-        this.socket.emit(`songLine:unselect`, song, stanza, line);
+        this.socket.emit(apiVal.songLine_unselect, song, stanza, line);
     }
 
     get activeClass() {
@@ -86,14 +91,14 @@ export default class WordProjector {
         return 'top-line';
     }
 
-    getSongsHtml(songs: any[]) {
+    getSongsHtml(songs: Song[]) {
         const ccliLicense = this.ccliLicense;
-        function hymnalNumber(song: any) {
+        function hymnalNumber(song: Song) {
             return song.majestyNumber ? ` #${song.majestyNumber.toFixed()}` : '';
         }
-        function authorText(song: any) {
+        function authorText(song: Song) {
             const authors = [song.author].concat(song.otherAuthors ? song.otherAuthors : []);
-            const prefixAuthors = authors.map(author => {
+            const prefixAuthors = authors.map((author: any) => {
                 if (author.hasOwnProperty('scriptureRef')) {
                     return ['From', author.scriptureRef];
                 }
@@ -134,22 +139,22 @@ export default class WordProjector {
             });
             return authorText;
         }
-        function fullAuthorText(song: any) {
+        function fullAuthorText(song: Song) {
             let fullText = authorText(song);
             const props = ['arrangedBy', 'adaptedBy', 'translatedBy', 'versifiedBy'];
             Object.getOwnPropertyNames(song).filter(prop => props.includes(prop)).forEach(propName => {
                 if (fullText) {
                     fullText += '; ';
                 }
-                fullText += propName.substr(0, propName.length-2) + ' by ' + song[propName].name;
+                fullText += propName.substr(0, propName.length-2) + ' by ' + (song as any)[propName].name;
             });
             return fullText;
         }
-        function stanzasAndFooter(song: any) {
+        function stanzasAndFooter(song: Song) {
             const canShowWords = ! song.copyright || (ccliLicense && song.ccliSongNumber && song.ccliWordsCopyrights);
             return ! canShowWords ? '<footer><h1>(Words only in hymnal)</h1></footer>' : `
-                ${song.stanzas.map((stanza: any) => stanza.lines).map((lines: any) => `
-                <ol>${lines.map((line: any) => `
+                ${song.stanzas.map(stanza => stanza.lines).map(lines => `
+                <ol>${lines.map(line => `
                     <li>${escape(line)}</li>`).join('')}
                 </ol>`).join('\n')
                 }
@@ -206,12 +211,12 @@ export default class WordProjector {
         return { articleSelector, isSwitchingArticle };
     }
 
-    registerOnSongsLoaded(callback: (songs: any) => void) {
+    registerOnSongsLoaded(callback: (songs: Song[]) => void) {
         this.onSongsLoadedCallbacks.push(callback);
         callback(this.allSongs);
     }
 
-    registerOnSongsChange(callback: (songs: any) => void) {
+    registerOnSongsChange(callback: (songs: Song[]) => void) {
         this.onSongsChangeCallbacks.push(callback);
         callback(this.currentSongs);
     }
@@ -226,10 +231,14 @@ export default class WordProjector {
         });
     }
 
-    registerOnSongLineSelect(callback: any) {
+    registerOnSongLineSelect(callback: SongStanzaLineCallback) {
         this.onSongLineSelectCallbacks.push(callback);
-        if (this.currentSongLineAction === 'select') {
-            callback(this.currentSong, this.currentStanza, this.currentLine);
+        if (this.currentSongLineAction === apiVal.select) {
+            if (this.currentSongStanzaLine === null) {
+                throw new Error('registerOnSongLineSelect: this.currentSongStanzaLine unexpectedly null');
+            }
+            const { song, stanza, line } = this.currentSongStanzaLine;
+            callback(song, stanza, line);
         }
     }
 
@@ -244,14 +253,18 @@ export default class WordProjector {
         });
     }
 
-    registerOnSongLineUnselect(callback: any) {
+    registerOnSongLineUnselect(callback: SongStanzaLineCallback) {
         this.onSongLineUnselectCallbacks.push(callback);
-        if (this.currentSongLineAction === 'unselect') {
-            callback(this.currentSong, this.currentStanza, this.currentLine);
+        if (this.currentSongLineAction === apiVal.unselect) {
+            if (this.currentSongStanzaLine === null) {
+                throw new Error('registerOnSongLineUnselect: this.currentSongStanzaLine unexpectedly null');
+            }
+            const { song, stanza, line } = this.currentSongStanzaLine;
+            callback(song, stanza, line);
         }
     }
 
-    registerOnSongLineUnselectSetTopLineAndClearSong(callback: any) {
+    registerOnSongLineUnselectSetTopLineAndClearSong(callback: Function) {
         this.registerOnSongLineUnselect((song: number, stanza: number, line: number) => {
             this.setTopLine(song, stanza, line);
             this.unselectSong();
@@ -259,3 +272,6 @@ export default class WordProjector {
         });
     }
 }
+
+type SongsCallback = (songs: Song[]) => void;
+type SongStanzaLineCallback = (song: number, stanza: number, line: number) => void;

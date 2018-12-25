@@ -1,4 +1,4 @@
-export default interface Song {
+export interface BuildingSong {
     id: number;
     title: string;
     majestyNumber?: number;
@@ -15,6 +15,10 @@ export default interface Song {
     copyright?: string;
     ccliSongNumber?: number;
     ccliWordsCopyrights?: string;
+}
+
+export default interface Song extends BuildingSong {
+    author: Author;
 }
 
 export interface Stanza {
@@ -38,7 +42,8 @@ export interface PersonWithCentury extends Person {
     century: number;
 }
 
-export type Author = PersonWithYears
+export type Author = never
+    | PersonWithYears
     | PersonWithCentury
     | { traditional: true }
     | { basedOn: string, year: number }

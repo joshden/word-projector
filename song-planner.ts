@@ -1,14 +1,15 @@
 import WordProjector from "./word-projector";
 import $ from 'jquery';
 import _ from 'lodash';
+import Song from "./song";
 require('jquery-ui/ui/widgets/sortable');
 require('selectize');
 
 export default function songPlanner(wordProjector: WordProjector) {
 $(function() {
     const $select = $('#songs');
-    let allSongs: any[] = [];
-    let previousIds: any[] = [];
+    let allSongs: Song[] = [];
+    let previousIds: string[] = [];
     let doKeepChange = false;
 
     function asSelectize(value: any) {
@@ -22,7 +23,7 @@ $(function() {
         labelField: 'title',
         searchField: 'title',
         options: allSongs,
-        onChange: function(ids: any[]) {
+        onChange: function(ids: string[]) {
             if (doKeepChange) {
                 doKeepChange = false;
                 previousIds = ids;
@@ -65,7 +66,7 @@ $(function() {
 
     wordProjector.registerOnSongsChange(songs => {
         const selectize = $select[0].selectize;
-        const ids = songs.map((song: any) => song.id);
+        const ids = songs.map((song: Song) => song.id);
 
         doKeepChange = true;
         selectize.setValue(ids);
