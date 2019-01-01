@@ -1,7 +1,7 @@
 import WordProjector from "./word-projector";
 import $ from 'jquery';
 import _ from 'lodash';
-import Song from "./song";
+import Song from "../lib/song";
 require('jquery-ui/ui/widgets/sortable');
 require('selectize');
 

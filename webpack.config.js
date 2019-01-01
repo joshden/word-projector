@@ -2,11 +2,13 @@ const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const clientSrc = path.resolve(__dirname, 'src-client');
+
 module.exports = {
     mode: 'development',
     entry: {
-        main: './main.ts',
-        presentation: './presentation.ts'
+        main: path.resolve(clientSrc, 'main.ts'),
+        presentation: path.resolve(clientSrc, 'presentation.ts')
     },
     module: {
         rules: [
@@ -48,12 +50,12 @@ module.exports = {
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
             chunks: ['main'],
-            template: 'index.html',
+            template: path.resolve(clientSrc, 'index.html'),
             filename: 'index.html'
         }),
         new HtmlWebpackPlugin({
             chunks: ['presentation'],
-            template: 'presentation.html',
+            template: path.resolve(clientSrc, 'presentation.html'),
             filename: 'presentation.html'
         }),
     ],

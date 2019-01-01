@@ -4,7 +4,7 @@ import socketio, { Socket } from 'socket.io';
 import jsonfile from 'jsonfile';
 import fs from 'fs';
 import os from 'os';
-import apiVals, { SongLineAction } from './apiValues';
+import apiVals, { SongLineAction } from './lib/apiValues';
 
 const currentSongsPath = __dirname + '/data/currentSongs.json';
 const ccliLicensePath = __dirname + '/data/ccli.json';

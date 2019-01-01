@@ -1,8 +1,8 @@
 import $ from 'jquery';
 import io from 'socket.io-client';
 import _ from 'lodash';
-import Song from './song';
-import apiVal, { SongLineAction } from './apiValues';
+import Song from '../lib/song';
+import apiVal, { SongLineAction } from '../lib/apiValues';
 
 export default class WordProjector {
     readonly aspectRatio: number;

@@ -1,4 +1,4 @@
-@import url('./node_modules/open-sans-all/css/open-sans.css');
+@import url('../node_modules/open-sans-all/css/open-sans.css');
 html {
     font-size: 16px;
 }

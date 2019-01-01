@@ -1,8 +1,8 @@
 import glob from "glob";
 import fs from "fs";
 import jszip from "jszip";
-import Song, { Stanza, Author, BuildingSong } from "./song";
-import getDocxTextLines from './docx-text-lines';
+import Song, { Stanza, Author, BuildingSong } from "./lib/song";
+import getDocxTextLines from './lib/docx-text-lines';
 
 
 const pattern = process.argv[2];
