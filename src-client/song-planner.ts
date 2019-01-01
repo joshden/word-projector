@@ -6,7 +6,6 @@ require('jquery-ui/ui/widgets/sortable');
 require('selectize');
 
 export default function songPlanner(wordProjector: WordProjector) {
-$(function() {
     const $select = $('#songs');
     let allSongs: Song[] = [];
     let previousIds: string[] = [];
@@ -23,12 +22,12 @@ $(function() {
         labelField: 'title',
         searchField: 'title',
         options: allSongs,
-        onChange: function(ids: string[]) {
+        onChange: function (ids: string[]) {
             if (doKeepChange) {
                 doKeepChange = false;
                 previousIds = ids;
             }
-            else if (! _.isEqual(previousIds, ids)) {
+            else if (!_.isEqual(previousIds, ids)) {
                 doKeepChange = true;
                 asSelectize(this).setValue(previousIds);
                 wordProjector.changeSongs(ids.map(id => parseInt(id, 10)));
@@ -36,12 +35,12 @@ $(function() {
         },
 
         openOnFocus: false,
-        onInitialize: function() {
+        onInitialize: function () {
             var that = asSelectize(this);
-            (this as any).$control.on('mousedown', function(this: any) {
+            (this as any).$control.on('mousedown', function (this: any) {
                 const el = this;
                 $()
-                if ($(el).find('input').is(':focus') && ! el.didClose) {
+                if ($(el).find('input').is(':focus') && !el.didClose) {
                     el.didClose = true;
                     that.close();
                 }
@@ -71,5 +70,4 @@ $(function() {
         doKeepChange = true;
         selectize.setValue(ids);
     });
-});
 }

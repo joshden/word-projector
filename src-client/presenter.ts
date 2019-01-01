@@ -2,14 +2,12 @@ import WordProjector from './word-projector';
 import $ from 'jquery';
 
 export default function presenter(wordProjector: WordProjector) {
-$(function () {
     const aspectRatio = wordProjector.aspectRatio;
     const $launchPresentation = $('#launchPresentation');
     const $liveFrame = $('#liveFrame');
     const $presenterFrame = $('#presenterFrame');
     const $presenterContents = $('#presenterContents');
-    const topLineClass = wordProjector.topLineClass;
-    const activeArticleSelector = wordProjector.activeArticle;
+    const { activeArticleSelector, topLineClassName } = wordProjector;
 
     let popup: Window | null = null;
 
@@ -24,7 +22,7 @@ $(function () {
             const song = $article.prevAll('article').length;
             const stanza = $clickedLine.parent().prevAll().length;
             const line = $clickedLine.prevAll().length;
-            const shouldUnselect = $clickedLine.hasClass(topLineClass) && $article.get(0) === $(activeArticleSelector).get(0);
+            const shouldUnselect = $clickedLine.hasClass(topLineClassName) && $article.get(0) === $(activeArticleSelector).get(0);
 
             if (shouldUnselect) {
                 wordProjector.unselectSongLine(song, stanza, line);
@@ -56,7 +54,7 @@ $(function () {
     function setLiveFramePosition() {
         const presenterWidth = $presenterFrame.width() as number;
 
-        const $topLine = $('.' + topLineClass);
+        const $topLine = $('.' + topLineClassName);
         if ($topLine.length) {
             const liveFrameHeight = presenterWidth / aspectRatio;
             $liveFrame.css('height', String(liveFrameHeight - borderWidth($liveFrame, 'Top') - borderWidth($liveFrame, 'Bottom')) + 'px');
@@ -94,5 +92,4 @@ $(function () {
             $launchPresentation.text('Close Presentation');
         }
     });
-});
 }

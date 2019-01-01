@@ -5,30 +5,29 @@ import Song from '../lib/song';
 import apiVal, { SongLineAction } from '../lib/apiValues';
 
 export default class WordProjector {
-    readonly aspectRatio: number;
+    readonly aspectRatio: number = 16 / 9;
     $wordContents = $();
-    ccliLicense: number | false = false;
-    allSongs: Song[] = [];
+    private ccliLicense: number | false = false;
+    private allSongs: Song[] = [];
 
-    currentSongs: Song[] = [];
-    currentSongLineAction : SongLineAction = null;
-    currentSongStanzaLine: null | {
+    private currentSongs: Song[] = [];
+    private currentSongLineAction: SongLineAction = null;
+    private currentSongStanzaLine: null | {
         song: number,
         stanza: number,
         line: number
     } = null;
 
-    onSongsLoadedCallbacks: SongsCallback[] = [];
-    onSongsChangeCallbacks: SongsCallback[] = [];
-    onSongLineSelectCallbacks: SongStanzaLineCallback[] = [];
-    onSongLineUnselectCallbacks: SongStanzaLineCallback[] = [];
+    private onSongsLoadedCallbacks: SongsCallback[] = [];
+    private onSongsChangeCallbacks: SongsCallback[] = [];
+    private onSongLineSelectCallbacks: SongStanzaLineCallback[] = [];
+    private onSongLineUnselectCallbacks: SongStanzaLineCallback[] = [];
 
     private readonly socket: SocketIOClient.Socket;
 
-    constructor(io: SocketIOClientStatic = SocketIOClientStatic) {
-        const widthByHeight = [16, 9];
-        this.aspectRatio = widthByHeight[0] / widthByHeight[1];
+    private readonly activeClassName = 'active';
 
+    constructor(io: SocketIOClientStatic = SocketIOClientStatic) {
         this.socket = io({ transports: ['polling'] });
         this.socket.on(apiVal.songs_change, (ids: number[]) => {
             this.currentSongs = [];
@@ -76,22 +75,81 @@ export default class WordProjector {
     selectSongLine(song: number, stanza: number, line: number) {
         this.socket.emit(apiVal.songLine_select, song, stanza, line);
     }
-    
+
     unselectSongLine(song: number, stanza: number, line: number) {
         this.socket.emit(apiVal.songLine_unselect, song, stanza, line);
     }
 
-    get activeClass() {
-        return 'active';
+    get activeArticleSelector() {
+        return 'article.' + this.activeClassName;
     }
-    get activeArticle() {
-        return 'article.' + this.activeClass;
-    }
-    get topLineClass() {
+    get topLineClassName() {
         return 'top-line';
     }
 
-    getSongsHtml(songs: Song[]) {
+    registerOnSongsLoaded(callback: (songs: Song[]) => void) {
+        this.onSongsLoadedCallbacks.push(callback);
+        callback(this.allSongs);
+    }
+
+    registerOnSongsChange(callback: (songs: Song[]) => void) {
+        this.onSongsChangeCallbacks.push(callback);
+        callback(this.currentSongs);
+    }
+
+    registerOnSongsChangeUpdateHtml($contents: JQuery, callback?: () => void) {
+        this.registerOnSongsChange(songs => {
+            const songsHtml = this.getSongsHtml(songs);
+            $contents.html(songsHtml);
+            if (callback) {
+                callback();
+            }
+        });
+    }
+
+    private registerOnSongLineSelect(callback: SongStanzaLineCallback) {
+        this.onSongLineSelectCallbacks.push(callback);
+        if (this.currentSongLineAction === apiVal.select) {
+            if (this.currentSongStanzaLine === null) {
+                throw new Error('registerOnSongLineSelect: this.currentSongStanzaLine unexpectedly null');
+            }
+            const { song, stanza, line } = this.currentSongStanzaLine;
+            callback(song, stanza, line);
+        }
+    }
+
+    registerOnSongLineSelectHandleWhetherSwitchingArticle(callback: (isSwitchingArticle: boolean) => void) {
+        this.registerOnSongLineSelect((song: number, stanza: number, line: number) => {
+            const { articleSelector, isSwitchingArticle } = this.setTopLineAndGetSelectionInfo(song, stanza, line);
+            if (isSwitchingArticle) {
+                this.unselectSong();
+                this.$wordContents.find(articleSelector).addClass('active');
+            }
+            callback(isSwitchingArticle);
+        });
+    }
+
+    private registerOnSongLineUnselect(callback: SongStanzaLineCallback) {
+        this.onSongLineUnselectCallbacks.push(callback);
+        if (this.currentSongLineAction === apiVal.unselect) {
+            if (this.currentSongStanzaLine === null) {
+                throw new Error('registerOnSongLineUnselect: this.currentSongStanzaLine unexpectedly null');
+            }
+            const { song, stanza, line } = this.currentSongStanzaLine;
+            callback(song, stanza, line);
+        }
+    }
+
+    registerOnSongLineUnselectSetTopLineAndClearSong(callback: Function) {
+        this.registerOnSongLineUnselect((song: number, stanza: number, line: number) => {
+            this.setTopLine(song, stanza, line);
+            this.unselectSong();
+            callback();
+        });
+    }
+
+
+    private getSongsHtml(songs: Song[]) {
         const ccliLicense = this.ccliLicense;
         function hymnalNumber(song: Song) {
             return song.majestyNumber ? ` #${song.majestyNumber.toFixed()}` : '';
@@ -146,13 +204,13 @@ export default class WordProjector {
                 if (fullText) {
                     fullText += '; ';
                 }
-                fullText += propName.substr(0, propName.length-2) + ' by ' + (song as any)[propName].name;
+                fullText += propName.substr(0, propName.length - 2) + ' by ' + (song as any)[propName].name;
             });
             return fullText;
         }
         function stanzasAndFooter(song: Song) {
-            const canShowWords = ! song.copyright || (ccliLicense && song.ccliSongNumber && song.ccliWordsCopyrights);
-            return ! canShowWords ? '<footer><h1>(Words only in hymnal)</h1></footer>' : `
+            const canShowWords = !song.copyright || (ccliLicense && song.ccliSongNumber && song.ccliWordsCopyrights);
+            return !canShowWords ? '<footer><h1>(Words only in hymnal)</h1></footer>' : `
                 ${song.stanzas.map(stanza => stanza.lines).map(lines => `
                 <ol>${lines.map(line => `
                     <li>${escape(line)}</li>`).join('')}
@@ -169,7 +227,7 @@ export default class WordProjector {
         }
         function escape(text: string) {
             const escaped = _.escape(text);
-            
+
             const matched = escaped.match(/( +)([^ ]+)$/);
             if (matched) {
                 const beforeLastSpaces = escaped.substr(0, escaped.length - matched[0].length);
@@ -194,82 +252,21 @@ export default class WordProjector {
         return songsHtml;
     }
 
-    unselectSong() {
-        this.$wordContents.find(this.activeArticle).removeClass(this.activeClass);
-    }
-
-    setTopLine(song: number, stanza: number, line: number) {
+    private setTopLine(song: number, stanza: number, line: number) {
         this.setTopLineAndGetSelectionInfo(song, stanza, line);
     }
 
-    setTopLineAndGetSelectionInfo(song: number, stanza: number, line: number) {
+    private setTopLineAndGetSelectionInfo(song: number, stanza: number, line: number) {
         const articleSelector = `article:nth-of-type(${song + 1})`;
-        const isSwitchingArticle = $(articleSelector).get(0) !== $(this.activeArticle).get(0);
+        const isSwitchingArticle = $(articleSelector).get(0) !== $(this.activeArticleSelector).get(0);
         const scrollToSelector = articleSelector + ` > :nth-child(${stanza + 1}) > :nth-child(${line + 1})`;
-        this.$wordContents.find('.' + this.topLineClass).removeClass(this.topLineClass);
-        this.$wordContents.find(scrollToSelector).addClass(this.topLineClass);
+        this.$wordContents.find('.' + this.topLineClassName).removeClass(this.topLineClassName);
+        this.$wordContents.find(scrollToSelector).addClass(this.topLineClassName);
         return { articleSelector, isSwitchingArticle };
     }
 
-    registerOnSongsLoaded(callback: (songs: Song[]) => void) {
-        this.onSongsLoadedCallbacks.push(callback);
-        callback(this.allSongs);
-    }
-
-    registerOnSongsChange(callback: (songs: Song[]) => void) {
-        this.onSongsChangeCallbacks.push(callback);
-        callback(this.currentSongs);
-    }
-
-    registerOnSongsChangeUpdateHtml($contents: JQuery, callback?: () => void) {
-        this.registerOnSongsChange(songs => {
-            const songsHtml = this.getSongsHtml(songs);
-            $contents.html(songsHtml);
-            if (callback) {
-                callback();
-            }
-        });
-    }
-
-    registerOnSongLineSelect(callback: SongStanzaLineCallback) {
-        this.onSongLineSelectCallbacks.push(callback);
-        if (this.currentSongLineAction === apiVal.select) {
-            if (this.currentSongStanzaLine === null) {
-                throw new Error('registerOnSongLineSelect: this.currentSongStanzaLine unexpectedly null');
-            }
-            const { song, stanza, line } = this.currentSongStanzaLine;
-            callback(song, stanza, line);
-        }
-    }
-
-    registerOnSongLineSelectHandleWhetherSwitchingArticle(callback: (isSwitchingArticle: boolean) => void) {
-        this.registerOnSongLineSelect((song: number, stanza: number, line: number) => {
-            const { articleSelector, isSwitchingArticle } = this.setTopLineAndGetSelectionInfo(song, stanza, line);
-            if (isSwitchingArticle) {
-                this.unselectSong();
-                this.$wordContents.find(articleSelector).addClass('active');
-            }
-            callback(isSwitchingArticle);
-        });
-    }
-
-    registerOnSongLineUnselect(callback: SongStanzaLineCallback) {
-        this.onSongLineUnselectCallbacks.push(callback);
-        if (this.currentSongLineAction === apiVal.unselect) {
-            if (this.currentSongStanzaLine === null) {
-                throw new Error('registerOnSongLineUnselect: this.currentSongStanzaLine unexpectedly null');
-            }
-            const { song, stanza, line } = this.currentSongStanzaLine;
-            callback(song, stanza, line);
-        }
-    }
-
-    registerOnSongLineUnselectSetTopLineAndClearSong(callback: Function) {
-        this.registerOnSongLineUnselect((song: number, stanza: number, line: number) => {
-            this.setTopLine(song, stanza, line);
-            this.unselectSong();
-            callback();
-        });
+    private unselectSong() {
+        this.$wordContents.find(this.activeArticleSelector).removeClass(this.activeClassName);
     }
 }
 
