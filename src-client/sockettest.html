@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+
+    <title>Word Projector | Socket Test</title>
+    <!-- <link rel="stylesheet" href="presentation.css"> -->
+    <style>
+        body {
+            color: black;
+            font-size: 4em;
+        }
+        #histogram {
+            margin: 0.5em 0 0.5em 0;
+            padding: 0;
+            border: 4px #eee solid;
+            background-color: #eee;
+        }
+        #histogram li {
+            margin: 0;
+            padding: 0;
+            background-color: #00CC0055;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div>Min: <span id="min"></span> ms</div>
+    <div>Avg: <span id="average"></span> ms</div>
+    <div>Max: <span id="max"></span> ms</div>
+    <button class="pure-button"></button>
+    <ul id="histogram"></ul>
+</body>
+</html>
