@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import io from 'socket.io-client';
+import SocketIOClientStatic from 'socket.io-client';
 import _ from 'lodash';
 import Song from '../lib/song';
 import apiVal, { SongLineAction } from '../lib/apiValues';
@@ -23,9 +23,9 @@ export default class WordProjector {
     onSongLineSelectCallbacks: SongStanzaLineCallback[] = [];
     onSongLineUnselectCallbacks: SongStanzaLineCallback[] = [];
 
-    socket = io({ transports: ['polling'] });
+    private readonly socket: SocketIOClient.Socket;
 
-    constructor() {
+    constructor(io: SocketIOClientStatic = SocketIOClientStatic) {
         const widthByHeight = [16, 9];
         this.aspectRatio = widthByHeight[0] / widthByHeight[1];
 
