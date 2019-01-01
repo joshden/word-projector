@@ -8,7 +8,8 @@ module.exports = {
     mode: 'development',
     entry: {
         main: path.resolve(clientSrc, 'main.ts'),
-        presentation: path.resolve(clientSrc, 'presentation.ts')
+        presentation: path.resolve(clientSrc, 'presentation.ts'),
+        sockettest: path.resolve(clientSrc, 'sockettest.ts')
     },
     module: {
         rules: [
@@ -57,6 +58,11 @@ module.exports = {
             chunks: ['presentation'],
             template: path.resolve(clientSrc, 'presentation.html'),
             filename: 'presentation.html'
+        }),
+        new HtmlWebpackPlugin({
+            chunks: ['sockettest'],
+            template: path.resolve(clientSrc, 'sockettest.html'),
+            filename: 'sockettest.html'
         }),
     ],
     node: {}
