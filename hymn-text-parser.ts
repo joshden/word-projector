@@ -1,7 +1,9 @@
-const getDocxTextLines = require('./docx-text-lines');
-const glob = require('glob');
-const fs = require('fs');
-const jszip = require('jszip');
+import glob from "glob";
+import fs from "fs";
+import jszip from "jszip";
+import Song, { Stanza, Author, BuildingSong } from "./lib/song";
+import getDocxTextLines from './lib/docx-text-lines';
+
 
 const pattern = process.argv[2];
 
@@ -27,14 +29,22 @@ const songLocations = {
     skipToNextSong: 7
 };
 
-const songs = [];
-const errors = [];
+type Error = string | {
+    path: string;
+    lineNum?: number;
+    message: string;
+    majestyNumber?: number;
+    warning?: boolean;
+};
+
+const songs: BuildingSong[] = [];
+const errors: Error[] = [];
 let id = 0;
 
 glob(pattern, (err, files) => {
     if (err) throw err;
 
-    const promises = [];
+    const promises: Promise<{} | void>[] = [];
 
     files.filter(file => fs.statSync(file).size > 0).forEach(path => {
         if (path.toLowerCase().endsWith('.zip')) {
@@ -44,7 +54,7 @@ glob(pattern, (err, files) => {
                         reject(err);
                     }
                     jszip.loadAsync(data).then(zip => {
-                        const zippedFiles = zip.filter((path, file) => path.toLowerCase().endsWith('.docx') && file._data.compressedSize);
+                        const zippedFiles = zip.filter((path, file) => path.toLowerCase().endsWith('.docx') && (file as any)._data.compressedSize);
                         Promise.all(zippedFiles.map(zippedFile => {
                             const fullPath = path + ':' + zippedFile.name;
                             const data = zippedFile.async('nodebuffer');
@@ -75,11 +85,11 @@ glob(pattern, (err, files) => {
     // promise.then(() => cleanAndOutputSongs());
 });
 
-function handleDocxFile(path, data) {
+function handleDocxFile(path: string, data: Buffer | Promise<Buffer>) {
     return Promise.resolve().then(() => getDocxTextLines(path, data)).then(lines => {
         // console.log(JSON.stringify(lines, null, 2));
-        let currentSong = null;
-        let currentStanza = null;
+        let currentSong: BuildingSong;
+        let currentStanza: Stanza | null = null;
         let isScriptureSong = false;
         let isNonMajestySong = false;
         let currentSongLocation = songLocations.before;
@@ -92,15 +102,15 @@ function handleDocxFile(path, data) {
                 return;
             }
 
-            function lineError(message) {
+            function lineError(message: string) {
                 errors.push({path: path, lineNum: i, message: message});
                 currentSongLocation = songLocations.skipToNextSong;
             }
-            function songError(message) {
+            function songError(message: string) {
                 errors.push({path: path, lineNum: i, majestyNumber: currentSong.majestyNumber, message: message});
                 currentSongLocation = songLocations.skipToNextSong;
             }
-            function songWarning(message) {
+            function songWarning(message: string) {
                 errors.push({path: path, lineNum: i, majestyNumber: currentSong.majestyNumber, message: message, warning: true});
             }
     
@@ -110,7 +120,12 @@ function handleDocxFile(path, data) {
                     isScriptureSong = startOfSongMatch[1] === 'SS:';
                     isNonMajestySong = startOfSongMatch[1] === '#0';
                     const majestyNumber = (isScriptureSong || isNonMajestySong) ? undefined : Number(startOfSongMatch[2])
-                    currentSong = { id: ++id, title: startOfSongMatch[3], majestyNumber: majestyNumber, stanzas: [] }
+                    currentSong = {
+                        id: ++id,
+                        title: startOfSongMatch[3],
+                        majestyNumber,
+                        stanzas: [] as Stanza[]
+                    }
                     currentStanza = null;
                     currentSongLocation = isNonMajestySong ? songLocations.afterScripture : songLocations.afterTitle;
                     songs.push(currentSong);
@@ -140,7 +155,7 @@ function handleDocxFile(path, data) {
                 else {
                     const match = line.trim().match(/^(.+?) [–-](\w.+)$/);
                     if (match) {
-                        currentSong.majestyScripture = {reference: match[2], text: match[1]};
+                        currentSong.majestyScripture = { reference: match[2], text: match[1] };
                     }
                     else if (! line.toLowerCase().includes('(no scripture reference)')) {
                         return songError(`Expected scripture quotation, but found: ${line}`);
@@ -151,7 +166,7 @@ function handleDocxFile(path, data) {
 
             else if (currentSongLocation === songLocations.afterScripture || currentSongLocation === songLocations.afterFirstAuthor) {
                 line = line.trim();
-                let author = null;
+                let author: Author | null = null;
 
                 const matchAuthorOptionalYears = line.match(/^By ([^,]+)(, (\d{4})\-(\d{4})?)?$/);
                 const matchAuthorAndCentury = line.match(/^By ([^,]+), (18|19|20)th [cC]entury$/);
@@ -198,7 +213,10 @@ function handleDocxFile(path, data) {
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchAuthorAndCentury) {
-                    author = {name: matchAuthorAndCentury[1], century: Number(matchAuthorAndCentury[2])};
+                    author = {
+                        name: matchAuthorAndCentury[1], 
+                        century: Number(matchAuthorAndCentury[2])
+                    };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchAuthorNameWithComma) {
@@ -215,31 +233,50 @@ function handleDocxFile(path, data) {
                 else if (matchAuthorNameWithCommaCirca) {
                     const birthYear = Number(matchAuthorNameWithCommaCirca[2]);
                     const deathYear = Number(matchAuthorNameWithCommaCirca[3]);
-                    author = {name: matchAuthorNameWithCommaCirca[1], birthYear: birthYear, deathYear: deathYear, circaYears: true};
+                    author = {
+                        name: matchAuthorNameWithCommaCirca[1],
+                        birthYear, 
+                        deathYear,
+                        circaYears: true
+                    };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchAuthorBornYear) {
                     const birthYear = Number(matchAuthorBornYear[2]);
-                    author = {name: matchAuthorBornYear[1], birthYear: birthYear };
+                    author = {
+                        name: matchAuthorBornYear[1],
+                        birthYear: birthYear
+                    };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchAuthorDeathYear) {
                     const deathYear = Number(matchAuthorDeathYear[2]);
-                    author = { name: matchAuthorDeathYear[1], deathYear: deathYear };
+                    author = {
+                        name: matchAuthorDeathYear[1],
+                        deathYear: deathYear
+                    };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchStanza) {
                     const birthYear = matchStanza[5] === undefined ? null : Number(matchStanza[5]);
                     const deathYear = matchStanza[6] === undefined ? null : Number(matchStanza[6]);
-                    author = {name: matchStanza[3], birthYear: birthYear, deathYear: deathYear, stanzas: matchStanza[1].split(',').map(s => Number(s))};
+                    author = {
+                        name: matchStanza[3],
+                        birthYear,
+                        deathYear,
+                        stanzas: matchStanza[1].split(',').map(s => Number(s))
+                    };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (line === 'Traditional') {
-                    author = {traditional: true};
+                    author = { traditional: true };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchBasedOn) {
-                    author = {basedOn: matchBasedOn[1], year: Number(matchBasedOn[2])};
+                    author = { 
+                        basedOn: matchBasedOn[1],
+                        year: Number(matchBasedOn[2])
+                    };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchScripture) {
@@ -247,11 +284,14 @@ function handleDocxFile(path, data) {
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchByWithEndingYear) {
-                    author = {byWork: matchByWithEndingYear[1], year: Number(matchByWithEndingYear[2])};
+                    author = {
+                        byWork: matchByWithEndingYear[1],
+                        year: Number(matchByWithEndingYear[2])
+                    };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (matchSource) {
-                    author = {source: matchSource[1]};
+                    author = { source: matchSource[1] };
                     currentSongLocation = songLocations.afterFirstAuthor;
                 }
                 else if (currentSongLocation === songLocations.afterScripture) {
@@ -264,10 +304,18 @@ function handleDocxFile(path, data) {
                     currentSongLocation = songLocations.afterHeader;
                 }
                 else if (matchArrangedBy) {
-                    currentSong.arrangedBy = {name: matchArrangedBy[1], birthYear: Number(matchArrangedBy[2]), deathYear: matchArrangedBy[3] === undefined ? null : Number(matchArrangedBy[3])};
+                    currentSong.arrangedBy = { 
+                        name: matchArrangedBy[1], 
+                        birthYear: Number(matchArrangedBy[2]), 
+                        deathYear: matchArrangedBy[3] === undefined ? null : Number(matchArrangedBy[3])
+                    };
                 }
                 else if (matchAdaptedBy) {
-                    currentSong.adaptedBy = {name: matchAdaptedBy[1], birthYear: Number(matchAdaptedBy[2]), deathYear: matchAdaptedBy[3] === undefined ? null : Number(matchAdaptedBy[3])};
+                    currentSong.adaptedBy = {
+                        name: matchAdaptedBy[1], 
+                        birthYear: Number(matchAdaptedBy[2]), 
+                        deathYear: matchAdaptedBy[3] === undefined ? null : Number(matchAdaptedBy[3])
+                    };
                 }
                 else if (matchTranslatedBy) {
                     currentSong.translatedBy = {
@@ -278,10 +326,18 @@ function handleDocxFile(path, data) {
                     };
                 }
                 else if (matchVersifiedBy) {
-                    currentSong.versifiedBy = {name: matchVersifiedBy[1], birthYear: Number(matchVersifiedBy[2]), deathYear: matchVersifiedBy[3] === undefined ? null : Number(matchVersifiedBy[3])};
+                    currentSong.versifiedBy = {
+                        name: matchVersifiedBy[1],
+                        birthYear: Number(matchVersifiedBy[2]),
+                        deathYear: matchVersifiedBy[3] === undefined ? null : Number(matchVersifiedBy[3])
+                    };
                 }
                 else if (matchAlteredBy) {
-                    currentSong.alteredBy = {name: matchAlteredBy[1], birthYear: Number(matchAlteredBy[2]), deathYear: matchAlteredBy[3] === undefined ? null : Number(matchAlteredBy[3])};
+                    currentSong.alteredBy = {
+                        name: matchAlteredBy[1],
+                        birthYear: Number(matchAlteredBy[2]),
+                        deathYear: matchAlteredBy[3] === undefined ? null : Number(matchAlteredBy[3])
+                    };
                 }
                 else if (currentSongLocation >= songLocations.afterFirstAuthor && line.length < 1 && isNonMajestySong) {
                     currentSongLocation = songLocations.afterHeader;
@@ -315,7 +371,10 @@ function handleDocxFile(path, data) {
                     if (currentStanza && currentStanza.majestyVerse + 1 !== verseNumber) {
                         return songError(`Expected stanza #${currentStanza.majestyVerse + 1}, but found: ${line}`);
                     }
-                    currentStanza = { majestyVerse: verseNumber, lines: [restOfLine] };
+                    currentStanza = { 
+                        majestyVerse: verseNumber,
+                        lines: [restOfLine]
+                    };
                     if (! currentSong.stanzas.length) {
                         currentSongLocation = songLocations.inStanzas;
                     }
@@ -360,7 +419,12 @@ function handleDocxFile(path, data) {
                         else if (line.match(/\d/) && ! isScriptureSong) {
                             songWarning(`Potentially invalid verse number: ${line.trim()}`);
                         }
-                        currentStanza.lines.push(line);
+                        else if (currentStanza === null) {
+                            songError(`No current stanza to add line to: ${line.trim()}`);
+                        }
+                        else {
+                            currentStanza.lines.push(line);
+                        }
                     }
                 }
             }
@@ -368,9 +432,22 @@ function handleDocxFile(path, data) {
     }).catch(msg => errors.push({path: path, message: msg}));
 }
 
+function validateSongFullyBuilt(song: BuildingSong): song is Song {
+    const newErrors: Error[] = [];
+    if (song.author === undefined) {
+        newErrors.push(`Song with no author: ${song.title}`);
+    }
+    errors.push(...newErrors);
+    return newErrors.length < 1;
+}
+
 function cleanAndOutputSongs() {
     const majestyNumberCounts = new Map();
+    const builtSongs: Song[] = [];
     songs.forEach(song => {
+        if (validateSongFullyBuilt(song)) {
+            builtSongs.push(song);
+        }
         const majestyNumber = song.majestyNumber;
         if (majestyNumber !== undefined) {
             if (! majestyNumberCounts.has(majestyNumber)) {
@@ -418,7 +495,7 @@ function cleanAndOutputSongs() {
         });
     }
     else {
-        // songs.sort((a, b) => {
+        // builtSongs.sort((a, b) => {
         //     if (a.majestyNumber !== b.majestyNumber) {
         //         if (! a.majestyNumber) return 1;
         //         if (! b.majestyNumber) return -1;
@@ -438,6 +515,6 @@ function cleanAndOutputSongs() {
         //         return aJson < bJson ? -1 : 1;
         //     }
         // });
-        console.log(JSON.stringify(songs, null, 2));
+        console.log(JSON.stringify(builtSongs, null, 2));
     }
 }
