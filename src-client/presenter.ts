@@ -33,8 +33,8 @@ export default function presenter(wordProjector: WordProjector) {
             }
         });
 
-        const linesAndWrapWords = [];
-        $clickables.each(function(iLine) {
+        const linesAndWrapWords: number[][] = [];
+        $clickables.each(function (iLine) {
             // console.log($(this).text().includes('N<o>w Thank We All Our\u00A0God #499'));
             const $line = $(this);
             const lineText = $line.text();
@@ -42,10 +42,10 @@ export default function presenter(wordProjector: WordProjector) {
             const lineWords = lineText.split(' ');
             let previousHeight = 0;
             let buildingLine = '';
-            const iWrapWords = [];
+            const iWrapWords: number[] = [];
             lineWords.forEach((word, iWord) => {
                 $line.text(buildingLine + ' ' + word);
-                const newHeight = $line.height();
+                const newHeight = $line.height() as number;
                 if (previousHeight > 0 && newHeight > previousHeight) {
                     iWrapWords.push(iWord/*, word*/);
                 }
