@@ -1,26 +1,37 @@
 import express from 'express';
 import http from 'http';
-import socketio, { Socket } from 'socket.io';
+import socketio from 'socket.io';
 import jsonfile from 'jsonfile';
 import fs from 'fs';
 import os from 'os';
 import apiVals, { SongLineAction } from './lib/apiValues';
+import Song from './lib/song';
+import _ from 'lodash';
+import { LocalDateTime } from 'js-joda';
+import path from 'path';
 
-const currentSongsPath = __dirname + '/data/currentSongs.json';
-const ccliLicensePath = __dirname + '/data/ccli.json';
+const dataDir = path.resolve(__dirname, 'data');
+const songsPath = path.resolve(dataDir, 'songs.json');
+const songsLogPath = path.resolve(dataDir, 'songsShown.log');
+const currentSongsPath = path.resolve(dataDir, 'currentSongs.json');
+const ccliLicensePath = path.resolve(dataDir, 'ccli.json');
 
-const app = express();
+const songsData = jsonfile.readFileSync(songsPath) as Song[];
 
 let ccliLicense: false | number = false;
 try {
     const obj = jsonfile.readFileSync(ccliLicensePath);
     ccliLicense = typeof obj === 'number' && obj > 0 ? obj : false;
-} catch (err) { 
-    /* default to false if CCLI file doesn't exist with valid number */ 
+} catch (err) {
+    /* default to false if CCLI file doesn't exist with valid number */
 }
 
+const app = express();
 app.get(apiVals.ccli, function (_req, res) {
     res.json(ccliLicense);
+});
+app.get(apiVals.songsJson, function (_req, res) {
+    res.json(songsData);
 });
 app.use('/data', express.static(__dirname + '/data'));
 app.use(express.static(__dirname + '/dist'));
@@ -62,13 +73,16 @@ io.on('connection', client => {
         persistSongData();
     });
 
-    [apiVals.select, apiVals.unselect].forEach(action => {
+    ([apiVals.select, apiVals.unselect] as SongLineAction[]).forEach(action => {
         const event = `${apiVals.songLine}:${action}`;
         client.on(event, (song: number, stanza: number, line: number) => {
             console.log(`echo ${event}`, { song, stanza, line });
             io.emit(event, song, stanza, line);
-            songData.songLineAction = action as any;
+            songData.songLineAction = action;
             songData.songLineRef = [song, stanza, line];
+            if (action === 'select') {
+                logSongShown(songData.songIds[song]);
+            }
             persistSongData();
         });
     });
@@ -78,6 +92,25 @@ io.on('connection', client => {
 
 function persistSongData() {
     jsonfile.writeFile(currentSongsPath, songData);
+}
+
+const loggedSongIds = new Set<number>();
+function logSongShown(songId: number) {
+    if (!loggedSongIds.has(songId)) {
+        loggedSongIds.add(songId);
+        const { title, ccliSongNumber, majestyNumber, stanzas, author, copyright } = songsData[songId - 1];
+        const logEntry = JSON.stringify({
+            dateTime: LocalDateTime.now().toString(),
+            majestyNumber,
+            scripture: (author as any).scriptureRef,
+            title,
+            ccliSongNumber,
+            copyright,
+            firstLine: _.get(stanzas, '[0]', { lines: [] }).lines[0]
+        });
+        console.log('logging', logEntry);
+        fs.writeFileSync(songsLogPath, logEntry + '\n', { flag: 'a' });
+    }
 }
 
 interface SongData {
