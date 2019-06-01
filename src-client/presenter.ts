@@ -12,11 +12,10 @@ export default function presenter(wordProjector: WordProjector) {
     let popup: Window | null = null;
 
     wordProjector.$wordContents = $presenterContents;
-    wordProjector.registerOnSongsChangeUpdateHtml($presenterContents, () => {
+    wordProjector.registerOnSongsChangeUpdateHtml($presenterContents, $songLines => {
         setLiveFramePosition();
 
-        const $clickables = $presenterContents.find('article h1, article h2, article h3, article li');
-        $clickables.click(function () {
+        $songLines.click(function () {
             const $clickedLine = $(this);
             const $article = $clickedLine.parents('article').first();
 
@@ -32,32 +31,6 @@ export default function presenter(wordProjector: WordProjector) {
                 wordProjector.selectSongLine(song, stanza, line);
             }
         });
-
-        const linesAndWrapWords: number[][] = [];
-        $clickables.each(function (iLine) {
-            // console.log($(this).text().includes('N<o>w Thank We All Our\u00A0God #499'));
-            const $line = $(this);
-            const lineText = $line.text();
-            $line.text('');
-            const lineWords = lineText.split(' ');
-            let previousHeight = 0;
-            let buildingLine = '';
-            const iWrapWords: number[] = [];
-            lineWords.forEach((word, iWord) => {
-                $line.text(buildingLine + ' ' + word);
-                const newHeight = $line.height() as number;
-                if (previousHeight > 0 && newHeight > previousHeight) {
-                    iWrapWords.push(iWord/*, word*/);
-                }
-                buildingLine += ' ' + word;
-                previousHeight = newHeight;
-            });
-            if (iWrapWords.length > 0) {
-                linesAndWrapWords.push([iLine].concat(iWrapWords));
-            }
-        });
-        console.log(JSON.stringify(linesAndWrapWords));
-
     });
     wordProjector.registerOnSongLineSelectHandleWhetherSwitchingArticle(() => {
         setLiveFramePosition();

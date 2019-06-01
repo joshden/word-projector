@@ -14,7 +14,34 @@ const $presentationContents = $('#presentationContents');
 const $presentationBottomFade = $('#presentationBottomFade');
 
 wordProjector.$wordContents = $presentationContents;
-wordProjector.registerOnSongsChangeUpdateHtml($presentationContents);
+wordProjector.registerOnSongsChangeUpdateHtml($presentationContents, $songLines => {
+    window.close();
+    const linesAndWrapWords: number[][] = [];
+    $songLines.each(function (iLine) {
+        // console.log($(this).text().includes('N<o>w Thank We All Our\u00A0God #499'));
+        const $line = $(this);
+        const lineText = $line.text();
+        $line.text('');
+        const lineWords = lineText.split(' ');
+        let previousHeight = 0;
+        let buildingLine = '';
+        const iWrapWords: number[] = [];
+        lineWords.forEach((word, iWord) => {
+            $line.text(buildingLine + ' ' + word);
+            const newHeight = $line.height() as number;
+            if (previousHeight > 0 && newHeight > previousHeight) {
+                iWrapWords.push(iWord/*, word*/);
+            }
+            buildingLine += ' ' + word;
+            previousHeight = newHeight;
+        });
+        if (iWrapWords.length > 0) {
+            linesAndWrapWords.push([iLine].concat(iWrapWords));
+        }
+    });
+    console.log(JSON.stringify(linesAndWrapWords));
+    sessionStorage.setItem("linesAndWrapWords", JSON.stringify({ time: new Date().getTime(), data: linesAndWrapWords }));
+});
 wordProjector.registerOnSongLineSelectHandleWhetherSwitchingArticle(isSwitchingArticle => {
     scrollToSelectedTopLine(!isSwitchingArticle);
 });

@@ -97,12 +97,12 @@ export default class WordProjector {
         callback(this.currentSongs);
     }
 
-    registerOnSongsChangeUpdateHtml($contents: JQuery, callback?: () => void) {
+    registerOnSongsChangeUpdateHtml($contents: JQuery, callback?: (songLines: JQuery<HTMLElement>) => void) {
         this.registerOnSongsChange(songs => {
             const songsHtml = this.getSongsHtml(songs);
             $contents.html(songsHtml);
             if (callback) {
-                callback();
+                callback($contents.find('article h1, article h2, article h3, article li'));
             }
         });
     }

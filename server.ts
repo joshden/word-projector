@@ -5,6 +5,7 @@ import jsonfile from 'jsonfile';
 import fs from 'fs';
 import os from 'os';
 import apiVals, { SongLineAction } from './lib/apiValues';
+import puppeteer from 'puppeteer';
 
 const currentSongsPath = __dirname + '/data/currentSongs.json';
 const ccliLicensePath = __dirname + '/data/ccli.json';
@@ -108,4 +109,20 @@ server.listen(port, () => {
     })
 
     console.log(`Listening on ${addresses.join('\n             ')}\n`);
+
+    // (async () => {
+    //     const browser = await puppeteer.launch({headless: false});
+    //     const page = await browser.newPage();
+    //     await page.setViewport({width: 1920, height: 1080});
+    //     const startTime = new Date().getTime();
+    //     await page.goto(`http://localhost:${port}/presentation.html`, {waitUntil: 'load'});
+    //     await page.waitForFunction(`function(startTime) {
+    //         const linesAndWrapWords = JSON.parse(sessionStorage.linesAndWrapWords);
+    //         return linesAndWrapWords && linesAndWrapWords.time > startTime;
+    //     }`, {}, startTime);
+    //     const value = await page.evaluate(() => sessionStorage.getItem("linesAndWrapWords"));
+    //     console.log({value});
+    //     await page.screenshot({path: 'screenshot.png'})
+    //     // await browser.close();
+    // })();
 });
