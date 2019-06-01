@@ -2,6 +2,7 @@ export type SongLineAction = 'select' | 'unselect' | null;
 
 export default class Values {
     static readonly ccli = '/ccli';
+    static readonly songsJson = '/songs.json';
     static readonly songs = 'songs';
     static readonly songLine = 'songLine';
     static readonly select = 'select';

@@ -53,7 +53,7 @@ export default class WordProjector {
         });
 
         const ccliPromise = $.get(apiVal.ccli, ccliLicense => this.ccliLicense = ccliLicense);
-        const songsPromise = $.get('data/songs.json', (songs: Song[]) => {
+        const songsPromise = $.get(apiVal.songsJson, (songs: Song[]) => {
             let id = 0;
             songs.forEach(song => song.id = ++id);
             this.allSongs = songs;
